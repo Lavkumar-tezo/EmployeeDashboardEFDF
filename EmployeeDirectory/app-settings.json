@@ -8,6 +8,6 @@
     "**/platforms"
   ],
   "connection": {
-    "sql": "Server=SQL-DEV;Database=LavDB_EF;Trusted_Connection=True;TrustServerCertificate=True"
+    "sql": "Server=SQL-DEV;Database=Lav_DB_EFDF;Trusted_Connection=True;TrustServerCertificate=True"
   }
 }

@@ -4,13 +4,13 @@ using EmployeeDirectory.DAL.Interfaces;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
-    public class RoleRepository(LavDbEfContext context) : IGenericRepository<Role>, IRoleRepository
+    public class RoleRepository(LavDbEfdfContext context):IGenericRepository<Role>
     {
-        private readonly LavDbEfContext _dbEfContext = context;
+        private readonly LavDbEfdfContext _dbEfContext = context;
 
         public List<Role> GetAll()
         {
-            List<Role> roles = _dbEfContext.Roles.Include("Department").ToList();
+            List<Role> roles = _dbEfContext.Roles.Include(r=> r.Departments).Include(r=> r.Locations).ToList();
             return roles;
         }
 
@@ -34,10 +34,5 @@ namespace EmployeeDirectory.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public List<Role> GetRolesByDept(string deptId)
-        {
-            List<Role> list = _dbEfContext.Roles.Include("Department").Where(role => role.Department.Id.ToString() == deptId).ToList();
-            return list;
-        }
     }
 }

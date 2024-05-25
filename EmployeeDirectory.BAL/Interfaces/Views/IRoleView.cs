@@ -8,6 +8,6 @@
 
         public void DisplayRoleList();
 
-        public void DisplayRole(DAL.Models.Role role);
+       public void DisplayRole(DAL.Models.Role role);
     }
 }

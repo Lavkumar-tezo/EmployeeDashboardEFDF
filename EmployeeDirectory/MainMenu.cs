@@ -4,10 +4,10 @@ using EmployeeDirectory.BAL.Interfaces.Views;
 
 namespace EmployeeDirectory
 {
-    public class MainMenu(IEmployeeView emp, IRoleView role)
+    public class MainMenu(IRoleView role)
     {
-        private readonly IEmployeeView emp = emp;
-        private readonly IRoleView role = role;
+        //private readonly IEmployeeView emp = emp;
+        private readonly IRoleView _role = role;
 
         public void ShowMainMenu()
         {
@@ -32,11 +32,11 @@ namespace EmployeeDirectory
                     {
                         case 1:
                             isValidInput = false;
-                            emp.ShowEmployeeMenu();
+                           // emp.ShowEmployeeMenu();
                             break;
                         case 2:
                             isValidInput = false;
-                            role.ShowRoleMenu();
+                            _role.ShowRoleMenu();
                             break;
                         default:
                             Printer.Print(true, "Program Ended");

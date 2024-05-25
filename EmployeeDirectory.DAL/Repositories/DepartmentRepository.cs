@@ -3,9 +3,9 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
-    public class DepartmentRepository(LavDbEfContext context) : IGenericRepository<Department>
+    public class DepartmentRepository(LavDbEfdfContext context):IGenericRepository<Department>
     {
-        private readonly LavDbEfContext _dbEfContext = context;
+        private readonly LavDbEfdfContext _dbEfContext = context;
 
         public List<Department> GetAll()
         {

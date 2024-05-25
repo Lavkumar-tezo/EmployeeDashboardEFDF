@@ -1,27 +1,36 @@
-﻿using EmployeeDirectory.BAL.Interfaces;
-using EmployeeDirectory.DAL.Models;
+﻿using EmployeeDirectory.DAL.Models;
 using EmployeeDirectory.DAL.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using EmployeeDirectory.BAL.Interfaces.Providers;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class RoleProvider(IGenericRepository<Role> data,IGenericRepository<Department> dept,IRoleRepository role) : IRoleProvider
+    public class RoleProvider(IGenericRepository<Role> data,IDepartmentProvider dept,ILocationProvider loc):IRoleProvider
     {
         private readonly IGenericRepository<Role> _role = data;
-        private readonly IGenericRepository<Department> _dept =dept;
-        private readonly IRoleRepository _roleRepository =role;
+        private readonly IDepartmentProvider _dept = dept;
+        private readonly ILocationProvider _loc=loc;
 
-        public  void AddRole(Dictionary<string, string> inputs)
+        public void AddRole(Dictionary<string, string> inputs)
         {
             Role role = new()
             {
                 Name = inputs["Name"],
-                Location = inputs["Location"],
                 Description = inputs["Description"],
                 Id = GenerateRoleId()
-            };           
-            List<Department> departments =  _dept.GetAll();
-            role.Department = departments.First(x => x.Id.ToString().Equals(inputs["Department"]))!;
-            role.DepartmentId=role.Department.Id;
+            };
+            List<Department> departments = _dept.GetList();
+            List<string> deptIds = new List<string>(inputs["Department"].Split(','));
+            foreach (string id in deptIds)
+            {
+                role.Departments.Add(departments.First(x => x.Id.ToString().Equals(id)));
+            }
+            List<Location> locations = _loc.GetList();
+            List<string> locIds = new List<string>(inputs["Location"].Split(','));
+            foreach(string id in locIds)
+            {
+                role.Locations.Add(locations.First(x=> x.Id.ToString().Equals(id)));
+            }
             _role.Add(role);
         }
 
@@ -47,11 +56,6 @@ namespace EmployeeDirectory.BAL.Providers
         public Role GetRole(string id)
         {
             return _role.Get(id);
-        }
-
-        public List<Role> GetRolesByDept(string deptId)
-        {
-            return _roleRepository.GetRolesByDept(deptId);
         }
     }
 }

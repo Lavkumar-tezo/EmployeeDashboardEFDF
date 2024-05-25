@@ -9,6 +9,7 @@ namespace EmployeeDirectory.Helpers
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns>integer value</returns>
+
         public static int CheckChoice(int start, int end)
         {
             bool isInputValid;

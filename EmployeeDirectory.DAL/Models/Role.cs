@@ -9,13 +9,11 @@ public partial class Role
 
     public string Name { get; set; } = null!;
 
-    public string Location { get; set; } = null!;
-
-    public int DepartmentId { get; set; }
-
     public string? Description { get; set; }
 
-    public virtual Department Department { get; set; } = null!;
-
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+
+    public virtual ICollection<Department> Departments { get; set; } = new List<Department>();
+
+    public virtual ICollection<Location> Locations { get; set; } = new List<Location>();
 }

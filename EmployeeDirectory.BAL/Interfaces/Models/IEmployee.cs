@@ -1,4 +1,4 @@
-﻿namespace EmployeeDirectory.BAL.Interfaces
+﻿namespace EmployeeDirectory.BAL.Interfaces.Models
 {
     public interface IEmployee
     {
@@ -10,7 +10,7 @@
 
         public DateTime JoinDate { get; set; }
 
-        public int Department {  get; set; }
+        public int Department { get; set; }
 
         public string Location { get; set; }
 

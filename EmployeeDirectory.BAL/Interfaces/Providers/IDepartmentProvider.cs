@@ -1,6 +1,6 @@
 ﻿using EmployeeDirectory.DAL.Models;
 
-namespace EmployeeDirectory.BAL.Interfaces
+namespace EmployeeDirectory.BAL.Interfaces.Providers
 {
     public interface IDepartmentProvider
     {

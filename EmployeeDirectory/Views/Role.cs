@@ -2,14 +2,16 @@
 using EmployeeDirectory.BAL.Helper;
 using EmployeeDirectory.BAL.Interfaces.Views;
 using EmployeeDirectory.BAL.Interfaces;
+using EmployeeDirectory.BAL.Interfaces.Providers;
 namespace EmployeeDirectory.Views
 {
-    public class Role(IValidator validator, IRoleProvider role, IGetProperty prop,IDepartmentProvider dept) : IRoleView
+    public class Role(IValidator validator, IRoleProvider role, IGetProperty prop,IDepartmentProvider dept, ILocationProvider loc):IRoleView
     {
         private readonly IValidator _validator = validator;
         private readonly IRoleProvider _roleProvider = role;
         private readonly IGetProperty _getProperty = prop;
         private readonly IDepartmentProvider _dept=dept ;
+        private readonly ILocationProvider _loc=loc ;
 
         public void ShowRoleMenu()
         {
@@ -64,8 +66,17 @@ namespace EmployeeDirectory.Views
                                 message += "  -- Write full department name";
                                 Printer.Print(true, message);
                             }
+                            else if (inputName.Equals("Location"))
+                            {
+                                Dictionary<string, string> list = _loc.GetLocations();
+                                string message = "Available Location : ";
+                                message += string.Join(", ", list.Values);
+                                message += "  -- Write Location names separated By Comma";
+                                Printer.Print(true, message);
+                            }
                             Printer.Print(false, $"{inputName} : ");
                             MessagesInputStore.inputFieldValues[inputName] = Console.ReadLine() ?? "";
+                            
                         }
                     }
                     isAllInputCorrect = _validator.ValidateRoleInputs(ref isAllInputCorrect);
@@ -84,7 +95,7 @@ namespace EmployeeDirectory.Views
             }
             catch (Exception ex)
             {
-                Printer.Print(true, ex.InnerException?.Message??"");
+                Printer.Print(true, ex.InnerException?.Message ?? "not added");
             }
 
         }
@@ -94,7 +105,7 @@ namespace EmployeeDirectory.Views
             try
             {
                 List<DAL.Models.Role> RoleList = _roleProvider.GetRoles();
-                if (RoleList.Count==0)
+                if (RoleList.Count == 0)
                 {
                     Console.WriteLine("No role found");
                 }
@@ -115,7 +126,11 @@ namespace EmployeeDirectory.Views
 
         public void DisplayRole(DAL.Models.Role role)
         {
-            Console.WriteLine($"Name: {role.Name} -- Department: {role.Department.Name} -- Location: {role.Location} -- Description: {role.Description}");
+            List<string> locs=role.Locations.Select(x => x.Name).ToList();
+            string location = string.Join(",", locs);
+            List<string> depts = role.Departments.Select(x => x.Name).ToList();
+            string department = string.Join(",", depts);
+            Console.WriteLine($"Name: {role.Name} -- Departments: {department} -- Locations: {location} -- Description: {role.Description}");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using EmployeeDirectory.BAL.Interfaces;
+﻿using EmployeeDirectory.BAL.Interfaces.Providers;
 using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.DAL.Models;
 
@@ -13,7 +13,7 @@ namespace EmployeeDirectory.BAL.Providers
             return _proj.GetAll();
         }
 
-        public Dictionary<string,string> GetProjects()
+        public Dictionary<string, string> GetProjects()
         {
             List<Project> projects = GetList();
             Dictionary<string, string> projList = new Dictionary<string, string>();

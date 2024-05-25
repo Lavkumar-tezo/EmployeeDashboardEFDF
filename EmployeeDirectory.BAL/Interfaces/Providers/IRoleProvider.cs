@@ -1,5 +1,5 @@
 ﻿using EmployeeDirectory.DAL.Models;
-namespace EmployeeDirectory.BAL.Interfaces
+namespace EmployeeDirectory.BAL.Interfaces.Providers
 {
     public interface IRoleProvider
     {
@@ -9,6 +9,5 @@ namespace EmployeeDirectory.BAL.Interfaces
 
         public Role GetRole(string id);
 
-        public List<Role> GetRolesByDept(string deptId);
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace EmployeeDirectory.BAL.Interfaces
+﻿namespace EmployeeDirectory.BAL.Interfaces.Models
 {
     public interface IRole
     {

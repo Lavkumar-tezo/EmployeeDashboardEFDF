@@ -3,18 +3,18 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
-    public class ProjectRepository(LavDbEfdfContext context):IGenericRepository<Project>
+    public class LocationRepository(LavDbEfdfContext context):IGenericRepository<Location>
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 
-        public List<Project> GetAll()
+        public List<Location> GetAll()
         {
-            return _dbEfContext.Projects.ToList();
+            return _dbEfContext.Locations.ToList();
         }
 
-        public Project Get(string id)
+        public Location Get(string id)
         {
-            return _dbEfContext.Projects.Find(Int32.Parse(id))!;
+            return _dbEfContext.Locations.Find(Int32.Parse(id))!;
         }
 
         public void Delete(string id)
@@ -22,12 +22,12 @@ namespace EmployeeDirectory.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public void Update(Project project)
+        public void Update(Location location)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Project project)
+        public void Add(Location location)
         {
             throw new NotImplementedException();
         }

@@ -1,11 +1,7 @@
 ﻿using EmployeeDirectory.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EmployeeDirectory.BAL.Interfaces
+
+namespace EmployeeDirectory.BAL.Interfaces.Providers
 {
     public interface IProjectProvider
     {

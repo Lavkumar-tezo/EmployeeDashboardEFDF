@@ -12,7 +12,7 @@
 
         public void DisplayEmployeeList();
 
-        public void DisplayEmployee(DAL.Models.Employee emp);
+       // public void DisplayEmployee(DAL.Models.Employee emp);
 
         public void DisplaySelectedEmp();
 

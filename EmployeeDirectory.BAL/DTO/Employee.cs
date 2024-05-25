@@ -1,4 +1,4 @@
-﻿using EmployeeDirectory.BAL.Interfaces;
+﻿using EmployeeDirectory.BAL.Interfaces.Models;
 namespace EmployeeDirectory.BAL.DTO
 {
     public class Employee : IEmployee

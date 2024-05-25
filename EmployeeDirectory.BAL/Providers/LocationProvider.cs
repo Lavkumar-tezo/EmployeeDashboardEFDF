@@ -4,19 +4,19 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class DepartmentProvider(IGenericRepository<Department> dept):IDepartmentProvider
+    public class LocationProvider(IGenericRepository<Location> loc):ILocationProvider
     {
-        private readonly IGenericRepository<Department> _dept = dept;
+        private readonly IGenericRepository<Location> _loc = loc;
 
-        public List<Department> GetList()
+        public List<Location> GetList()
         {
-            return _dept.GetAll();
+            return _loc.GetAll();
         }
-        public Dictionary<string, string> GetDepartments()
+        public Dictionary<string, string> GetLocations()
         {
-            List<Department> departments = GetList();
+            List<Location> departments = GetList();
             Dictionary<string, string> deptList = new Dictionary<string, string>();
-            foreach (Department d in departments)
+            foreach (Location d in departments)
             {
                 deptList.Add(d.Id.ToString(), d.Name);
             }

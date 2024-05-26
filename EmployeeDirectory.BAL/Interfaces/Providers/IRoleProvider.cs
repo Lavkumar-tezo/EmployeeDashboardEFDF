@@ -9,5 +9,8 @@ namespace EmployeeDirectory.BAL.Interfaces.Providers
 
         public Role GetRole(string id);
 
+        public Dictionary<string, string> GetIdName();
+
+
     }
 }

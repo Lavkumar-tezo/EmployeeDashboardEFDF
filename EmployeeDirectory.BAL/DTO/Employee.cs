@@ -1,13 +1,12 @@
-﻿using EmployeeDirectory.BAL.Interfaces.Models;
-namespace EmployeeDirectory.BAL.DTO
+﻿namespace EmployeeDirectory.BAL.DTO
 {
-    public class Employee : IEmployee
+    public class Employee
     {
         public string FirstName { get; set; } = null!;
 
         public string LastName { get; set; } = null!;
 
-        public string Location { get; set; } = null!;
+        public int Location { get; set; }
 
         public string Email { get; set; } = null!;
 

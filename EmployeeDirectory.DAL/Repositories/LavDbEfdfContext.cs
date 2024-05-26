@@ -28,17 +28,17 @@ public partial class LavDbEfdfContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=SQL-DEV;Database=Lav_DB_EFDF;Trusted_Connection=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=LAV\\SQLEXPRESS;Database=Lav_DB_EFDF;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Departme__3214EC27F022D108");
+            entity.HasKey(e => e.Id).HasName("PK__Departme__3214EC27B60D7169");
 
             entity.ToTable("Department");
 
-            entity.HasIndex(e => e.Name, "UQ__Departme__737584F60C01BF77").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Departme__737584F605FA641F").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Name).HasMaxLength(25);
@@ -46,7 +46,7 @@ public partial class LavDbEfdfContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3214EC2701F76CF6");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3214EC2755FD92BD");
 
             entity.ToTable("Employee");
 
@@ -59,6 +59,8 @@ public partial class LavDbEfdfContext : DbContext
                 .HasColumnName("DOB");
             entity.Property(e => e.Email).HasMaxLength(150);
             entity.Property(e => e.FirstName).HasMaxLength(35);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(true);
+            entity.Property(e => e.IsManager).HasDefaultValue(false);
             entity.Property(e => e.JoiningDate).HasColumnType("datetime");
             entity.Property(e => e.LastName).HasMaxLength(35);
             entity.Property(e => e.LocationId).HasColumnName("LocationID");
@@ -74,34 +76,34 @@ public partial class LavDbEfdfContext : DbContext
             entity.HasOne(d => d.Department).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.DepartmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Employee__Depart__7F2BE32F");
+                .HasConstraintName("FK__Employee__Depart__76969D2E");
 
             entity.HasOne(d => d.Location).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.LocationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Employee__Locati__7E37BEF6");
+                .HasConstraintName("FK__Employee__Locati__75A278F5");
 
             entity.HasOne(d => d.Manager).WithMany(p => p.InverseManager)
                 .HasForeignKey(d => d.ManagerId)
-                .HasConstraintName("FK__Employee__Manage__02084FDA");
+                .HasConstraintName("FK__Employee__Manage__797309D9");
 
             entity.HasOne(d => d.Project).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.ProjectId)
-                .HasConstraintName("FK__Employee__Projec__01142BA1");
+                .HasConstraintName("FK__Employee__Projec__787EE5A0");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Employee__RoleID__00200768");
+                .HasConstraintName("FK__Employee__RoleID__778AC167");
         });
 
         modelBuilder.Entity<Location>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Location__3214EC27BD7A00C5");
+            entity.HasKey(e => e.Id).HasName("PK__Location__3214EC27E025CAF8");
 
             entity.ToTable("Location");
 
-            entity.HasIndex(e => e.Name, "UQ__Location__737584F6E81E04F9").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Location__737584F6E16DD39F").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Name).HasMaxLength(50);
@@ -109,11 +111,11 @@ public partial class LavDbEfdfContext : DbContext
 
         modelBuilder.Entity<Project>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Project__3214EC2769CE4BEC");
+            entity.HasKey(e => e.Id).HasName("PK__Project__3214EC27A5C76238");
 
             entity.ToTable("Project");
 
-            entity.HasIndex(e => e.Name, "UQ__Project__737584F623A962D0").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Project__737584F6813E39FF").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Name).HasMaxLength(35);
@@ -121,7 +123,7 @@ public partial class LavDbEfdfContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Role__3214EC27AB4F215E");
+            entity.HasKey(e => e.Id).HasName("PK__Role__3214EC273FE4BDA1");
 
             entity.ToTable("Role");
 
@@ -136,13 +138,13 @@ public partial class LavDbEfdfContext : DbContext
                     "RoleDepartment",
                     r => r.HasOne<Department>().WithMany()
                         .HasForeignKey("DepartmentId")
-                        .HasConstraintName("FK__RoleDepar__Depar__7B5B524B"),
+                        .HasConstraintName("FK__RoleDepar__Depar__59063A47"),
                     l => l.HasOne<Role>().WithMany()
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("FK__RoleDepar__RoleI__7A672E12"),
+                        .HasConstraintName("FK__RoleDepar__RoleI__5812160E"),
                     j =>
                     {
-                        j.HasKey("RoleId", "DepartmentId").HasName("PK__RoleDepa__41DAB7864B0214E9");
+                        j.HasKey("RoleId", "DepartmentId").HasName("PK__RoleDepa__41DAB78667204AA4");
                         j.ToTable("RoleDepartment");
                         j.IndexerProperty<string>("RoleId")
                             .HasMaxLength(5)
@@ -155,13 +157,13 @@ public partial class LavDbEfdfContext : DbContext
                     "RoleLocation",
                     r => r.HasOne<Location>().WithMany()
                         .HasForeignKey("LocationId")
-                        .HasConstraintName("FK__RoleLocat__Locat__778AC167"),
+                        .HasConstraintName("FK__RoleLocat__Locat__5535A963"),
                     l => l.HasOne<Role>().WithMany()
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("FK__RoleLocat__RoleI__76969D2E"),
+                        .HasConstraintName("FK__RoleLocat__RoleI__5441852A"),
                     j =>
                     {
-                        j.HasKey("RoleId", "LocationId").HasName("PK__RoleLoca__E485247DD6B2B8CE");
+                        j.HasKey("RoleId", "LocationId").HasName("PK__RoleLoca__E485247D84B71500");
                         j.ToTable("RoleLocation");
                         j.IndexerProperty<string>("RoleId")
                             .HasMaxLength(5)

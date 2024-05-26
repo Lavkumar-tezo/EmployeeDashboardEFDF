@@ -5,11 +5,11 @@ using EmployeeDirectory.BAL.Interfaces.Providers;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class RoleProvider(IGenericRepository<Role> data,IDepartmentProvider dept,ILocationProvider loc):IRoleProvider
+    public class RoleProvider(IGenericRepository<Role> data, IGenericProvider<Department> dept, IGenericProvider<Location> loc):IRoleProvider
     {
         private readonly IGenericRepository<Role> _role = data;
-        private readonly IDepartmentProvider _dept = dept;
-        private readonly ILocationProvider _loc=loc;
+        private readonly IGenericProvider<Department> _dept = dept;
+        private readonly IGenericProvider<Location> _loc =loc;
 
         public void AddRole(Dictionary<string, string> inputs)
         {
@@ -53,9 +53,21 @@ namespace EmployeeDirectory.BAL.Providers
             return _role.GetAll();
         }
 
+        public Dictionary<string, string> GetIdName()
+        {
+            List<Role> roles = GetRoles();
+            Dictionary<string, string> roleIdName = new Dictionary<string, string>();
+            foreach (Role r in roles)
+            {
+                roleIdName.Add(r.Id.ToString(), r.Name);
+            }
+            return roleIdName;
+        }
+
         public Role GetRole(string id)
         {
             return _role.Get(id);
         }
+
     }
 }

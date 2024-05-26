@@ -1,8 +1,6 @@
-﻿using EmployeeDirectory.BAL.Interfaces.Models;
-
-namespace EmployeeDirectory.BAL.DTO
+﻿namespace EmployeeDirectory.BAL.DTO
 {
-    public class Role : IRole
+    public class Role
     {
 
         public string Department { get; set; } = null!;

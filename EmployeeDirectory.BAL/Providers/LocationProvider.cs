@@ -4,7 +4,7 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class LocationProvider(IGenericRepository<Location> loc):ILocationProvider
+    public class LocationProvider(IGenericRepository<Location> loc):IGenericProvider<Location>
     {
         private readonly IGenericRepository<Location> _loc = loc;
 
@@ -12,7 +12,16 @@ namespace EmployeeDirectory.BAL.Providers
         {
             return _loc.GetAll();
         }
-        public Dictionary<string, string> GetLocations()
+
+        public Location Get(string id)
+        {
+            int locId = Int32.Parse(id);
+            List<Location> list = GetList();
+            Location loc = list.First(x => x.Id == locId);
+            return loc;
+        }
+
+        public Dictionary<string, string> GetIdName()
         {
             List<Location> departments = GetList();
             Dictionary<string, string> deptList = new Dictionary<string, string>();

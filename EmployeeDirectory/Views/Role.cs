@@ -3,15 +3,17 @@ using EmployeeDirectory.BAL.Helper;
 using EmployeeDirectory.BAL.Interfaces.Views;
 using EmployeeDirectory.BAL.Interfaces;
 using EmployeeDirectory.BAL.Interfaces.Providers;
+using EmployeeDirectory.DAL.Models;
 namespace EmployeeDirectory.Views
 {
-    public class Role(IValidator validator, IRoleProvider role, IGetProperty prop,IDepartmentProvider dept, ILocationProvider loc):IRoleView
+    public class Role(IValidator validator, IRoleProvider role, IGetProperty prop, IGenericProvider<Location> loc,
+        IGenericProvider<Department> dept) :IRoleView
     {
         private readonly IValidator _validator = validator;
         private readonly IRoleProvider _roleProvider = role;
         private readonly IGetProperty _getProperty = prop;
-        private readonly IDepartmentProvider _dept=dept ;
-        private readonly ILocationProvider _loc=loc ;
+        private readonly IGenericProvider<Department> _dept =dept ;
+        private readonly IGenericProvider<Location> _loc =loc ;
 
         public void ShowRoleMenu()
         {
@@ -60,7 +62,7 @@ namespace EmployeeDirectory.Views
                         {
                             if (inputName.Equals("Department"))
                             {
-                                Dictionary<string, string> list = _dept.GetDepartments();
+                                Dictionary<string, string> list = _dept.GetIdName();
                                 string message = "Available Department : ";
                                 message += string.Join(", ", list.Values);
                                 message += "  -- Write full department name";
@@ -68,7 +70,7 @@ namespace EmployeeDirectory.Views
                             }
                             else if (inputName.Equals("Location"))
                             {
-                                Dictionary<string, string> list = _loc.GetLocations();
+                                Dictionary<string, string> list = _loc.GetIdName();
                                 string message = "Available Location : ";
                                 message += string.Join(", ", list.Values);
                                 message += "  -- Write Location names separated By Comma";

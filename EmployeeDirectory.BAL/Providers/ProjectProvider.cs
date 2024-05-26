@@ -4,7 +4,7 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class ProjectProvider(IGenericRepository<Project> proj):IProjectProvider
+    public class ProjectProvider(IGenericRepository<Project> proj):IGenericProvider<Project>
     {
         private readonly IGenericRepository<Project> _proj = proj;
 
@@ -13,7 +13,15 @@ namespace EmployeeDirectory.BAL.Providers
             return _proj.GetAll();
         }
 
-        public Dictionary<string, string> GetProjects()
+        public Project Get(string id)
+        {
+            int prjectId=Int32.Parse(id);
+            List<Project> list = GetList();
+            Project project = list.First(x=> x.Id==prjectId);
+            return project;
+        }
+
+        public Dictionary<string, string> GetIdName()
         {
             List<Project> projects = GetList();
             Dictionary<string, string> projList = new Dictionary<string, string>();

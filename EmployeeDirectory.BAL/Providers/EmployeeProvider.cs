@@ -8,6 +8,7 @@ using EmployeeDirectory.DAL.Models;
 using Microsoft.IdentityModel.Tokens;
 using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.BAL.Interfaces.Providers;
+using System.Reflection;
 
 namespace EmployeeDirectory.BAL.Providers
 {
@@ -27,19 +28,17 @@ namespace EmployeeDirectory.BAL.Providers
         {
            if (string.Equals("Add",mode))
            {
-               DTO.Employee newEmp = new()
-               {
-                   FirstName = values["FirstName"],
-                   LastName = values["LastName"],
-                   Email = values["Email"],
-                   JoinDate = DateTime.Parse(values["JoinDate"]),
-                   Location = Int32.Parse(ModelKeyStore.locId),
-                   Role = ModelKeyStore.roleId,
-                   Manager = values["Manager"],
-                   Mobile = values["Mobile"],
-                   Department= Int32.Parse(ModelKeyStore.deptId),
-                   DOB = (values["DOB"] != null) ? DateTime.Parse(values["DOB"]) : DateTime.Now
-               };
+                DTO.Employee newEmp = new();
+                newEmp.FirstName = values["FirstName"];
+                newEmp.LastName = values["LastName"];
+                newEmp.Email = values["Email"];
+                newEmp.JoinDate = DateTime.Parse(values["JoinDate"]);
+                newEmp.Location = Int32.Parse(ModelKeyStore.locId);
+                newEmp.Role = ModelKeyStore.roleId;
+                newEmp.Manager = values["Manager"];
+                newEmp.Mobile = values["Mobile"];
+                newEmp.Department = Int32.Parse(ModelKeyStore.deptId);
+                newEmp.DOB = (values["DOB"] != null) ? DateTime.Parse(values["DOB"]) : null;
                if (!values["Project"].IsEmpty())
                {
                    newEmp.Project = Int32.Parse(ModelKeyStore.projectId);

@@ -7,7 +7,6 @@ using EmployeeDirectory.BAL.Extension;
 using EmployeeDirectory.DAL.Models;
 using EmployeeDirectory.BAL.Providers;
 using EmployeeDirectory.BAL.Interfaces.Providers;
-using System.Collections.Generic;
 namespace EmployeeDirectory.BAL.Validators
 {
     public class Validator(IRoleProvider role, IGenericProvider<Location> loc,
@@ -46,15 +45,9 @@ namespace EmployeeDirectory.BAL.Validators
                MessagesInputStore.validationMessages.Remove(key);
                return true;
            }
-           if (input.Length != 10)
+           if (input.Length != 10 || input.All(char.IsDigit))
            {
-               MessagesInputStore.validationMessages[key] = "Mobile number should of 10 digit";
-               return false;
-           }
-           bool isDigit = input.All(char.IsDigit);
-           if (!isDigit)
-           {
-               MessagesInputStore.validationMessages[key] = "Mobile number should contains digit only";
+               MessagesInputStore.validationMessages[key] = "Mobile number should of 10 characters and contains digit only";
                return false;
            }
            else
@@ -187,13 +180,6 @@ namespace EmployeeDirectory.BAL.Validators
                 if (item.Value.ToLower().Equals(value.ToLower()))
                 {
                     MessagesInputStore.inputFieldValues[key] = item.Key;
-                    /*ModelKeyStore.deptId=(string.Equals(key, "Department")) ?item.Key:"";
-                    ModelKeyStore.deptName = (string.Equals(key, "Department")) ? item.Value : "";
-                    ModelKeyStore.locId = (string.Equals(key, "Location")) ? item.Key : "";
-                    ModelKeyStore.locName = (string.Equals(key, "Location")) ? item.Value : "";
-                    ModelKeyStore.roleId = (string.Equals(key, "Role")) ? item.Key : "";
-                    ModelKeyStore.roleName = (string.Equals(key, "Role")) ? item.Value : "";
-                    ModelKeyStore.projectId = (string.Equals(key, "Project")) ? item.Key : "";*/
                     switch (key)
                     {
                         case "Department":
@@ -211,48 +197,13 @@ namespace EmployeeDirectory.BAL.Validators
                         case "Project":
                             ModelKeyStore.projectId = item.Key;
                             break;
-                        default:
-                            // Handle any other cases if necessary
-                            break;
                     }
 
                     MessagesInputStore.validationMessages.Remove(key);
                     return true;
                 }
             }
-            /*string message = "Selected " + key + " Not Found. Choose from these: ";
-            message += string.Join(", ", getStaticData.Values);
-            MessagesInputStore.validationMessages[key] = message;*/
             return false;
-        }
-
-
-        private bool CheckCombination(Tuple<string, string, string> tuple, Dictionary<string, string> depts,
-        Dictionary<string, string> locs,
-        Dictionary<string, string> roles)
-        {
-            foreach (var item in depts)
-            {
-                foreach(var item2 in locs)
-                {
-                    foreach( var item3 in roles)
-                    {
-                        if (string.Equals(item.Value, tuple.Item1, StringComparison.OrdinalIgnoreCase) &&
-                        string.Equals(item2.Value, tuple.Item2, StringComparison.OrdinalIgnoreCase) &&
-                        string.Equals(item3.Value, tuple.Item3, StringComparison.OrdinalIgnoreCase))
-                        {
-                            MessagesInputStore.validationMessages.Remove("Department");
-                            MessagesInputStore.validationMessages.Remove("Location");
-                            MessagesInputStore.validationMessages.Remove("Role");
-                            ModelKeyStore.deptId=item.Key;
-                            ModelKeyStore.locId=item2.Key;
-                            ModelKeyStore.roleId=item3.Key;
-                            return true;
-                        }
-                    }
-                }
-            }
-            return true;
         }
 
         private bool ValidateEmployeeRole(string mode)
@@ -277,15 +228,6 @@ namespace EmployeeDirectory.BAL.Validators
             {
                 return check;
             }
-            /*var myTuple = Tuple.Create(dept,loc,role);
-            if (string.Equals(mode, "Edit"))
-            {
-                myTuple = Tuple.Create(
-                (dept.IsEmpty()) ? ModelKeyStore.deptName : dept,
-                (loc.IsEmpty()) ? ModelKeyStore.locName : loc,
-                (role.IsEmpty()) ? ModelKeyStore.roleName : role
-            );
-            }*/
             Role selectedRole = _role.GetRole(ModelKeyStore.roleId);
             Department selectedDepartment=_dept.Get(ModelKeyStore.deptId);
             Location selectedLocation=_loc.Get(ModelKeyStore.locId);
@@ -354,31 +296,6 @@ namespace EmployeeDirectory.BAL.Validators
            
         }
 
-        /*public bool ValidateDepartment(string key, string value)
-        {
-           Dictionary<string, string> deptlist = _dept.GetIdName();
-           if (Int32.TryParse(value, out int num) && num > 0 && num <= deptlist.Count)
-           {
-               MessagesInputStore.validationMessages.Remove(key);
-               return true;
-           }
-           string deptValue = MessagesInputStore.inputFieldValues["Department"];
-           string roleNames = "";
-           foreach (KeyValuePair<string, string> item in deptlist)
-           {
-               if (item.Value.ToLower().Equals(value.ToLower()))
-               {
-                   MessagesInputStore.inputFieldValues[key] = item.Key;
-                   MessagesInputStore.validationMessages.Remove(key);
-                   return true;
-               }
-           }
-           string message = $"Selected {key} Not Found in selected department. Choose from these: {roleNames}";
-           message += string.Join(", ", deptlist.Values);
-           MessagesInputStore.validationMessages[key] = message;
-           return false;
-        }*/
-
         public bool ValidateManager(string key, string value)
         {
             string pattern = @"^TZ\d{4}$";
@@ -404,7 +321,6 @@ namespace EmployeeDirectory.BAL.Validators
         public bool ValidateEmployeeInputs(string mode, ref bool isAllInputCorrect)
         {
            bool isAllValid = true;
-           bool isRoleComboTrue = true;
            foreach (var input in MessagesInputStore.inputFieldValues)
            {
                if (!mode.Equals("Add") && input.Value!.IsEmpty())
@@ -423,13 +339,13 @@ namespace EmployeeDirectory.BAL.Validators
                    }
                    else if (input.Key.Equals("JoinDate") || input.Key.Equals("DOB"))
                    {
-                       isAllValid = ValidateDate(input.Value ?? "", input.Key) && isAllValid;
-                   }
-                   else if ((input.Key.Equals("Role") || input.Key.Equals("Location") || input.Key.Equals("Department")) && isRoleComboTrue)
+                        /*                      isAllValid = ValidateDate(input.Value ?? "", input.Key) && isAllValid;*/
+                        isAllValid = true && isAllValid;
+
+                    }
+                    else if ((input.Key.Equals("Role") || input.Key.Equals("Location") || input.Key.Equals("Department")))
                    {
-                       isRoleComboTrue = ValidateEmployeeRole(mode);
-                       isAllValid = isAllValid && isRoleComboTrue;
-                       isRoleComboTrue = !isRoleComboTrue;
+                        isAllValid = ValidateEmployeeRole(mode) && isAllValid;
                    }
                    else if (input.Key.Equals("Project"))
                    {

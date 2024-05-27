@@ -12,19 +12,19 @@ namespace EmployeeDirectory.DAL.Repositories
         public List<Employee> GetAll()
         {
 
-           List<Employee> employees = _dbEfContext.Employees.Where(x => x.IsDeleted !=false).Include("Department").Include("Project").Include("Role").ToList();
+           List<Employee> employees = _dbEfContext.Employees.Where(x => x.IsDeleted !=true).Include("Department").Include("Project").Include("Role").Include("Location").ToList();
            return employees;
         }
 
         public Employee Get(string empId)
         {
            List<Employee>? employees = GetAll();
-           Employee? employee = employees.FirstOrDefault(e => e.Id == empId);
+           Employee? employee = employees.FirstOrDefault(e => e.Id.ToLower() == empId.ToLower());
            if (employee != null)
            {
                return employee;
            }
-           throw new EmpNotFound("Id not found");
+           throw new EmpNotFound("Employee with given id not found");
         }
 
         public void Add(Employee newEmp)
@@ -33,9 +33,9 @@ namespace EmployeeDirectory.DAL.Repositories
            _dbEfContext.SaveChanges();
         }
 
-        public void Update(Employee emp)
+        public void Update(Employee updatedEmp)
         {
-           _dbEfContext.Entry(emp).State = EntityState.Modified;
+           _dbEfContext.Entry(updatedEmp).State = EntityState.Modified;
            _dbEfContext.SaveChanges();
         }
 
@@ -45,8 +45,11 @@ namespace EmployeeDirectory.DAL.Repositories
            if (emp != null)
            {
                emp.IsDeleted=true;
+                _dbEfContext.SaveChanges();
+                return;
            }
-           _dbEfContext.SaveChanges();
+            throw new EmpNotFound("Selected Employee Not found");
+           
         }
 
     }

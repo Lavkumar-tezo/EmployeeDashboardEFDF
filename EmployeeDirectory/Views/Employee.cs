@@ -160,7 +160,7 @@ namespace EmployeeDirectory.Views
                _employee.AddEmployee(emp);
                Printer.Print(true, "Employee added");
            }
-           catch (IOException ex)
+           catch (Exception ex)
            {
                Printer.Print(true, ex.Message);
            }
@@ -175,21 +175,23 @@ namespace EmployeeDirectory.Views
                string inputId = Console.ReadLine() ?? "";
                if (inputId.IsEmpty())
                {
+                    //
                    throw new DAL.Exceptions.EmpNotFound("Employee Id can't be null");
                }
-               bool check = _employee.IsEmployeePresent(inputId);
-               BAL.DTO.Employee emp = TakeInput("Edit");
-               _employee.UpdateEmployee(emp);
+                (bool check,DAL.Models.Employee selectedEmp) = _employee.GetEmployeeById(inputId);
+                BAL.DTO.Employee emp = TakeInput("Edit");
+               _employee.UpdateEmployee(emp,selectedEmp);
                Printer.Print(true, "Employee Updated");
            }
-           catch (IOException ex)
+            catch (DAL.Exceptions.EmpNotFound ex)
+            {
+                Printer.Print(true, ex.Message);
+            }
+            catch (Exception ex)
            {
                Printer.Print(true, ex.Message);
            }
-           catch (DAL.Exceptions.EmpNotFound ex)
-           {
-               Printer.Print(true, ex.Message);
-           }
+           
 
         }
         public void DisplayEmployeeList()
@@ -209,16 +211,16 @@ namespace EmployeeDirectory.Views
                    Printer.Print(true, "No Employee Found in List");
                }
            }
-           catch (IOException ex)
+           catch (Exception ex)
            {
                Printer.Print(true, ex.Message);
            }
 
         }
 
-        public void DisplayEmployee(DAL.Models.Employee emp)
+        private void DisplayEmployee(DAL.Models.Employee emp)
         {
-           Printer.Print(true, $"Emp Id: {emp.Id} -- Full Name: {emp.FirstName} {emp.LastName} -- Department: {emp.Department.Name} -- Role: {emp.Role.Name} -- Email: {emp.Email} -- Location: {emp.Location} -- JoiningDate: {emp.JoiningDate} -- Manager: {emp.Manager?.FirstName} {emp.Manager?.LastName} -- Project: {emp.Project?.Name} -- DOB: {emp.Dob} -- Mobile: {emp.Mobile}");
+           Printer.Print(true, $"Emp Id: {emp.Id} -- Full Name: {emp.FirstName} {emp.LastName} -- Department: {emp.Department.Name} -- Role: {emp.Role.Name} -- Email: {emp.Email} -- Location: {emp.Location.Name} -- JoiningDate: {emp.JoiningDate} -- Manager: {emp.Manager?.FirstName} {emp.Manager?.LastName} -- Project: {emp.Project?.Name} -- DOB: {emp.Dob} -- Mobile: {emp.Mobile}");
         }
 
         public void DisplaySelectedEmp()
@@ -232,15 +234,14 @@ namespace EmployeeDirectory.Views
            }
            try
            {
-               (bool check, dynamic emp) = _employee.GetEmployeeById(inputId);
+               (bool check, DAL.Models.Employee emp) = _employee.GetEmployeeById(inputId);
                DisplayEmployee(emp);
-
            }
            catch (DAL.Exceptions.EmpNotFound ex)
            {
                Printer.Print(true, ex.Message);
            }
-           catch (IOException ex)
+           catch (Exception ex)
            {
                Printer.Print(true, ex.Message);
            }
@@ -259,23 +260,15 @@ namespace EmployeeDirectory.Views
                }
                else
                {
-                   (bool check, dynamic emp) = _employee.GetEmployeeById(inputId);
-                   if (check == true)
-                   {
-                       _employee.DeleteEmployee(inputId);
-                       Printer.Print(true, "Employee deleted");
-                   }
-                   else
-                   {
-                       Printer.Print(true, emp);
-                   }
-               }
+                    _employee.DeleteEmployee(inputId);
+                    Printer.Print(true, "Employee deleted");
+                }
            }
            catch (DAL.Exceptions.EmpNotFound ex)
            {
                Printer.Print(true, ex.Message);
            }
-           catch (IOException ex)
+           catch (Exception ex)
            {
                Printer.Print(true, ex.Message);
            }

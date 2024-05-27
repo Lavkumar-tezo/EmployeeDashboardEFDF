@@ -20,6 +20,7 @@ public class DepartmentProvider(IGenericRepository<Department> dept) : IGenericP
         return dept;
     }
 
+    //
     public Dictionary<string, string> GetIdName()
     {
         List<Department> projects = GetList();

@@ -2,13 +2,12 @@
 {
     internal class ModelKeyStore
     {
-        public static string deptId;
-        public static string deptName;
-        public static string roleId;
-        public static string roleName;
-        public static string locId;
-        public static string locName;
-        public static string projectId;
-        public static string projectName;
+        public static string Id { get; set; } = null!;
+
+        public static string deptName { get; set; } = null!;
+
+        public static string roleName { get; set; } = null!;
+
+        public static string locName { get; set; } = null!;
     }
 }

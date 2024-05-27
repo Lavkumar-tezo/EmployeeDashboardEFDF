@@ -40,24 +40,28 @@ namespace EmployeeDirectory.BAL.Validators
 
         private static bool ValidatePhone(string input, string key)
         {
-           if (input.IsEmpty())
-           {
-               MessagesInputStore.validationMessages.Remove(key);
-               return true;
-           }
-           if (input.Length != 10 || input.All(char.IsDigit))
-           {
-               MessagesInputStore.validationMessages[key] = "Mobile number should of 10 characters and contains digit only";
-               return false;
-           }
-           else
-           {
-               MessagesInputStore.validationMessages.Remove(key);
-               return true;
-           }
+            if (input.IsEmpty())
+            {
+                MessagesInputStore.validationMessages.Remove(key);
+                return true;
+            }
+            if (input.Length != 10)
+            {
+                MessagesInputStore.validationMessages[key] = "Mobile number should of 10 digit";
+                return false;
+            }
+            bool isDigit = input.All(char.IsDigit);
+            if (!isDigit)
+            {
+                MessagesInputStore.validationMessages[key] = "Mobile number should contains digit only";
+                return false;
+            }
+            else
+            {
+                MessagesInputStore.validationMessages.Remove(key);
+                return true;
+            }
         }
-
-
 
         private static bool IsAlphabeticSpace(string input)
         {
@@ -65,13 +69,11 @@ namespace EmployeeDirectory.BAL.Validators
             return regex.IsMatch(input);
         }
 
-
         public static int ValidateOption(string value)
         {
             int option = Convert.ToInt32(value);
             return option;
         }
-
 
         private static bool IsFieldEmpty(string value, string key)
         {
@@ -83,22 +85,22 @@ namespace EmployeeDirectory.BAL.Validators
             else
             {
                 MessagesInputStore.validationMessages.Remove(key);
+                
             }
             return check;
         }
 
-
         private static bool IsValidDateFormat(string value, string key)
         {
-           if (DateTime.TryParseExact(value, "dd/MM/yyyy", null, DateTimeStyles.None, out DateTime result))
+           if (DateTime.TryParseExact(value, "MM/dd/yyyy", null, DateTimeStyles.None, out DateTime result))
            {
-               MessagesInputStore.inputFieldValues[key] = result.ToString();
+                MessagesInputStore.inputFieldValues[key] = result.ToString("MM/dd/yyyy");
                MessagesInputStore.validationMessages.Remove(key);
                return true;
            }
            else
            {
-               MessagesInputStore.validationMessages[key] = $"{key} : Date is not in dd/mm/yyyy format";
+               MessagesInputStore.validationMessages[key] = $"{key} : Date is not in mm/dd/yyyy format";
                return false;
            }
         }
@@ -157,53 +159,40 @@ namespace EmployeeDirectory.BAL.Validators
             return (true, "Role available");
         }
 
-        private bool ValidateInput(string key, string value, Dictionary<string, string> getStaticData,string mode)
+        private (bool,string) ValidateInput(string key, string value, Dictionary<string, string> getStaticData,string mode)
         {
             value = value.Trim().ToLower();
             if (value.IsEmpty() && key.Equals("Project"))
             {
                 MessagesInputStore.validationMessages.Remove(key);
-                return true;
+                return (true,"passed");
             }
             else if (value.IsEmpty())
             {
                 MessagesInputStore.validationMessages[key]=$"{key} : Required fields can't be null";
-                return false;
+                return (false,"Failed");
             }
-            if ((MessagesInputStore.validationMessages.ContainsKey("Department") || MessagesInputStore.validationMessages.ContainsKey("Location")) && string.Equals(mode, "Add") && string.Equals(key,"Role"))
+            if ((MessagesInputStore.validationMessages.ContainsKey("Department") || MessagesInputStore.validationMessages.ContainsKey("Location")) && string.Equals(mode, "Add") && string.Equals(key, "Role"))
             {
                 MessagesInputStore.validationMessages["Role"] = "Select valid department and location first for applying role";
-                return false;
+                return (false, "Failed");
             }
             foreach (var item in getStaticData)
             {
                 if (item.Value.ToLower().Equals(value.ToLower()))
                 {
-                    MessagesInputStore.inputFieldValues[key] = item.Key;
-                    switch (key)
+                    if (key.Equals("Project"))
                     {
-                        case "Department":
-                            ModelKeyStore.deptId = item.Key;
-                            ModelKeyStore.deptName = item.Value;
-                            break;
-                        case "Location":
-                            ModelKeyStore.locId = item.Key;
-                            ModelKeyStore.locName = item.Value;
-                            break;
-                        case "Role":
-                            ModelKeyStore.roleId = item.Key;
-                            ModelKeyStore.roleName = item.Value;
-                            break;
-                        case "Project":
-                            ModelKeyStore.projectId = item.Key;
-                            break;
+                        MessagesInputStore.inputFieldValues[key] = item.Key;
                     }
-
                     MessagesInputStore.validationMessages.Remove(key);
-                    return true;
+                    return (true,item.Key);
                 }
             }
-            return false;
+            string message = "Selected " + key + " Not Found. Choose from these: ";
+            message += string.Join(", ", getStaticData.Values);
+            MessagesInputStore.validationMessages[key] = message;
+            return (false,"Failed");
         }
 
         private bool ValidateEmployeeRole(string mode)
@@ -211,28 +200,40 @@ namespace EmployeeDirectory.BAL.Validators
             string dept = MessagesInputStore.inputFieldValues["Department"];
             string loc = MessagesInputStore.inputFieldValues["Location"];
             string role = MessagesInputStore.inputFieldValues["Role"];
+
             Dictionary<string, string> deptList = _dept.GetIdName();
             Dictionary<string, string> locList = _loc.GetIdName();
             Dictionary<string, string> roleList = _role.GetIdName();
             bool check = true;
             if (string.Equals(mode, "Edit"))
             {
+                //
                 dept = (dept.IsEmpty()) ? ModelKeyStore.deptName : dept;
                 loc = (loc.IsEmpty()) ? ModelKeyStore.locName : loc;
                 role = (role.IsEmpty()) ? ModelKeyStore.roleName : role;
             }
-            check=ValidateInput("Department", dept, deptList, mode) && check;
-            check = ValidateInput("Location", loc, locList, mode) && check;
-            check = ValidateInput("Role", role, roleList, mode) && check;
+            bool isValid=true;
+            (isValid, string deptId)=ValidateInput("Department", dept, deptList, mode);
+            check=isValid && check;
+            (isValid, string locId) = ValidateInput("Location", loc, locList, mode);
+            check = isValid && check;
+            (isValid, string roleId) = ValidateInput("Role", role, roleList, mode);
+            check = isValid && check;
             if (!check)
             {
                 return check;
             }
-            Role selectedRole = _role.GetRole(ModelKeyStore.roleId);
-            Department selectedDepartment=_dept.Get(ModelKeyStore.deptId);
-            Location selectedLocation=_loc.Get(ModelKeyStore.locId);
-            if(selectedRole.Departments.Contains(selectedDepartment) && selectedRole.Locations.Contains(selectedLocation))
+            Role selectedRole = _role.GetRole(roleId);
+            Department selectedDepartment=_dept.Get(deptId);
+            Location selectedLocation=_loc.Get(locId);
+            //
+            bool isDeptContainRole=selectedDepartment.Roles.Any(r=> r.Id==selectedRole.Id);
+            bool isLocContainRole=selectedLocation.Roles.Any(l=> l.Id==selectedRole.Id);
+            if(isDeptContainRole && isLocContainRole)
             {
+                MessagesInputStore.inputFieldValues["Role"] = selectedRole.Id;
+                MessagesInputStore.inputFieldValues["Department"] = selectedDepartment.Id.ToString();
+                MessagesInputStore.inputFieldValues["Location"] = selectedLocation.Id.ToString();
                 return true;
             }
             if (string.Equals(mode, "Add"))
@@ -240,52 +241,52 @@ namespace EmployeeDirectory.BAL.Validators
                 dept = string.Join(", ", deptList.Values);
                 loc = string.Join(", ",locList.Values);
                 role = string.Join(", ",roleList.Values);
-                MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departaments : {dept}";
+                MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departments : {dept}";
                 MessagesInputStore.validationMessages["Location"] = $"Selected Combination not found, Available Locations : {loc}";
                 MessagesInputStore.validationMessages["Role"] = $"Selected Combination not found, Available Roles : {role}";
             }
             else
             {
-                if(!dept.IsEmpty() && !loc.IsEmpty())
+                if(!MessagesInputStore.inputFieldValues["Department"].IsEmpty() && !MessagesInputStore.inputFieldValues["Location"].IsEmpty())
                 {
                     List<Department> depts = selectedRole.Departments.ToList();
                     dept = string.Join(", ", depts.Select(d => d.Name));
                     List<Location> locs = selectedRole.Locations.ToList();
                     loc = string.Join(", ", locs.Select(d => d.Name));
-                    MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departaments : {dept}";
-                    MessagesInputStore.validationMessages["Location"] = $"Selected Combination not found, Availabl Locations : {loc}";
+                    MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departments : {dept}";
+                    MessagesInputStore.validationMessages["Location"] = $"Selected Combination not found, Available Locations : {loc}";
                 }
-                else if(!dept.IsEmpty() && !role.IsEmpty())
+                else if(!MessagesInputStore.inputFieldValues["Department"].IsEmpty() && !MessagesInputStore.inputFieldValues["Role"].IsEmpty())
                 {
                     List<Department> depts = selectedRole.Departments.ToList();
                     dept = string.Join(", ", depts.Select(d => d.Name));
                     List<Role> roles=selectedLocation.Roles.ToList();
                     role = string.Join(", ", roles.Select(d => d.Name));
-                    MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departaments : {dept}";
+                    MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departments : {dept}";
                     MessagesInputStore.validationMessages["Role"] = $"Selected Combination not found, Available Role : {role}";
                 }
-                else if(!loc.IsEmpty() && !role.IsEmpty())
+                else if(!MessagesInputStore.inputFieldValues["Location"].IsEmpty() && !MessagesInputStore.inputFieldValues["Role"].IsEmpty())
                 {
                     List<Location> locs = selectedRole.Locations.ToList();
                     loc = string.Join(", ", locs.Select(d => d.Name));
                     List<Role> roles = selectedDepartment.Roles.ToList();
                     role = string.Join(", ", roles.Select(d => d.Name));
-                    MessagesInputStore.validationMessages["Location"] = $"Selected Combination not found, Availabl Locations : {loc}";
+                    MessagesInputStore.validationMessages["Location"] = $"Selected Combination not found, Available Locations : {loc}";
                     MessagesInputStore.validationMessages["Role"] = $"Selected Combination not found, Available Role : {role}";
                 }
-                else if (!dept.IsEmpty())
+                else if (!MessagesInputStore.inputFieldValues["Department"].IsEmpty())
                 {
                     List<Department> depts = selectedRole.Departments.ToList();
                     dept = string.Join(", ", depts.Select(d => d.Name));
-                    MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departaments : {dept}";
+                    MessagesInputStore.validationMessages["Department"] = $"Selected Combination not found, Available Departments : {dept}";
                 }
-                else if (!loc.IsEmpty())
+                else if (!MessagesInputStore.inputFieldValues["Location"].IsEmpty())
                 {
                     List<Location> locs = selectedRole.Locations.ToList();
                     loc = string.Join(", ", locs.Select(d => d.Name));
                     MessagesInputStore.validationMessages["Location"] = $"Selected Combination not found, Available Locations : {loc}";
                 }
-                else if (!role.IsEmpty())
+                else if (!MessagesInputStore.inputFieldValues["Role"].IsEmpty())
                 {
                     List<Role> roles = selectedDepartment.Roles.ToList();
                     role = string.Join(", ", roles.Select(d => d.Name));
@@ -298,6 +299,7 @@ namespace EmployeeDirectory.BAL.Validators
 
         public bool ValidateManager(string key, string value)
         {
+            value = value.ToUpper();
             string pattern = @"^TZ\d{4}$";
             bool check=Regex.IsMatch(value, pattern);
             if (!check)
@@ -321,6 +323,7 @@ namespace EmployeeDirectory.BAL.Validators
         public bool ValidateEmployeeInputs(string mode, ref bool isAllInputCorrect)
         {
            bool isAllValid = true;
+           bool isCombinationTrue = true;
            foreach (var input in MessagesInputStore.inputFieldValues)
            {
                if (!mode.Equals("Add") && input.Value!.IsEmpty())
@@ -331,7 +334,7 @@ namespace EmployeeDirectory.BAL.Validators
                {
                    if (input.Key.Equals("FirstName") || input.Key.Equals("LastName"))
                    {
-                       isAllValid = IsFieldEmpty(input.Value ?? "", input.Key) && isAllValid;
+                       isAllValid = !IsFieldEmpty(input.Value ?? "", input.Key) && isAllValid;
                    }
                    else if (input.Key.Equals("Email"))
                    {
@@ -339,17 +342,23 @@ namespace EmployeeDirectory.BAL.Validators
                    }
                    else if (input.Key.Equals("JoinDate") || input.Key.Equals("DOB"))
                    {
-                        /*                      isAllValid = ValidateDate(input.Value ?? "", input.Key) && isAllValid;*/
-                        isAllValid = true && isAllValid;
+                        isAllValid = ValidateDate(input.Value ?? "", input.Key) && isAllValid;
 
                     }
-                    else if ((input.Key.Equals("Role") || input.Key.Equals("Location") || input.Key.Equals("Department")))
+                    else if ((input.Key.Equals("Role") || input.Key.Equals("Location") || input.Key.Equals("Department")) && isCombinationTrue)
                    {
+                        isCombinationTrue = !isCombinationTrue;
+                        // name, pass params
                         isAllValid = ValidateEmployeeRole(mode) && isAllValid;
                    }
                    else if (input.Key.Equals("Project"))
                    {
-                       isAllValid = ValidateInput(input.Key, input.Value ?? "", _proj.GetIdName(),mode) && isAllValid;
+                        (bool check, string message) = ValidateInput(input.Key, input.Value ?? "", _proj.GetIdName(), mode);
+                        isAllValid = isAllValid && check;
+                        if (check && !string.Equals(message, "passed"))
+                        {
+                            isAllValid = isAllValid && check;
+                        }
                    }
                    else if (input.Key.Equals("Mobile"))
                    {
@@ -357,13 +366,13 @@ namespace EmployeeDirectory.BAL.Validators
                    }
                    else if (input.Key.Equals("Manager"))
                    {
-                        if(input.Value.IsEmpty())
+                        if((input.Value??"").IsEmpty())
                         {
                             MessagesInputStore.validationMessages.Remove(input.Key);
                         }
                         else
                         {
-                            isAllValid = ValidateManager(input.Key,input.Value) && isAllValid;
+                            isAllValid = ValidateManager(input.Key,input.Value!) && isAllValid;
                         }
                         
                     }

@@ -40,7 +40,11 @@ namespace EmployeeDirectory.BAL.Providers
                     {
                         propertyName = "Project";
                     }
-                    else if (propertyName.Equals("Role") || propertyName.Equals("Department") || propertyName.Equals("Project"))
+                    else if (propertyName.Equals("LocationId"))
+                    {
+                        propertyName = "Location";
+                    }
+                    else if (propertyName.Equals("Role") || propertyName.Equals("Department") || propertyName.Equals("Project") || propertyName.Equals("Location"))
                     {
                         continue;
                     }

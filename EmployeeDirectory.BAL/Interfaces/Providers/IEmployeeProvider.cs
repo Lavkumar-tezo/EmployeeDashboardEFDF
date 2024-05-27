@@ -11,9 +11,7 @@ namespace EmployeeDirectory.BAL.Interfaces.Providers
 
         public (bool, Employee) GetEmployeeById(string id);
 
-        public bool IsEmployeePresent(string id);
-
-        public void UpdateEmployee(DTO.Employee employee);
+        public void UpdateEmployee(DTO.Employee employee, Employee emp);
 
         public void DeleteEmployee(string id);
 

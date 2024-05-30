@@ -7,13 +7,13 @@ using System.Runtime.InteropServices;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class EmployeeProvider(IGenericRepository<Employee> employee, IRoleProvider role, IGenericProvider<Location> loc, IGenericProvider<Department> dept, IGenericProvider<Project> proj): IEmployeeProvider
+    public class EmployeeProvider(IRepository<Employee> employee, IRoleProvider role, IProvider<Location> loc, IProvider<Department> dept, IProvider<Project> proj): IEmployeeProvider
     {
-        private readonly IGenericRepository<Employee> _employee =employee;
+        private readonly IRepository<Employee> _employee =employee;
         private readonly IRoleProvider _role = role;
-        private readonly IGenericProvider<Location> _loc=loc;
-        private readonly IGenericProvider<Department> _dept = dept;
-        private readonly IGenericProvider<Project> _proj = proj;
+        private readonly IProvider<Location> _loc=loc;
+        private readonly IProvider<Department> _dept = dept;
+        private readonly IProvider<Project> _proj = proj;
 
         public DTO.Employee AddValueToDTO(Dictionary<string, string> values, string mode)
         {
@@ -45,7 +45,7 @@ namespace EmployeeDirectory.BAL.Providers
            }
            else
            {
-               (bool check,Employee emp) = GetEmployeeById(ModelKeyStore.Id);
+               (bool check,Employee emp) = GetEmployeeById(SelectedEmployee.Id);
                DTO.Employee updateEmp = new()
                {
                    FirstName = (values["FirstName"].IsEmpty()) ? emp.FirstName : values["FirstName"],
@@ -85,8 +85,7 @@ namespace EmployeeDirectory.BAL.Providers
            }
             else
             {
-                //
-                newEmp.Id = ModelKeyStore.Id;
+                newEmp.Id = SelectedEmployee.Id;
             }
             newEmp.FirstName = emp.FirstName;
             newEmp.LastName = emp.LastName;
@@ -98,8 +97,7 @@ namespace EmployeeDirectory.BAL.Providers
            if (emp.Project != null)
            {
                newEmp.Project = _proj.Get(emp.Project.ToString()!);
-                //
-               newEmp.ProjectId = emp.Project;
+               newEmp.ProjectId = newEmp.Project.Id;
            }
            if(emp.Manager != null)
             {
@@ -135,10 +133,10 @@ namespace EmployeeDirectory.BAL.Providers
         {
             id = id.ToUpper();
             Employee emp = _employee.Get(id);
-            ModelKeyStore.Id = emp.Id;
-            ModelKeyStore.deptName = emp.Department.Name;
-            ModelKeyStore.locName = emp.Location.Name;
-            ModelKeyStore.roleName = emp.Role.Name;
+            SelectedEmployee.Id = emp.Id;
+            SelectedEmployee.deptName = emp.Department.Name;
+            SelectedEmployee.locName = emp.Location.Name;
+            SelectedEmployee.roleName = emp.Role.Name;
             return (true, emp);
 
         }

@@ -1,4 +1,4 @@
-﻿namespace EmployeeDirectory.BAL.Interfaces
+﻿namespace EmployeeDirectory.BAL.Interfaces.Helpers
 {
     public interface IGetProperty
     {

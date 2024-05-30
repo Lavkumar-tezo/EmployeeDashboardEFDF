@@ -4,9 +4,9 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class LocationProvider(IGenericRepository<Location> loc):IGenericProvider<Location>
+    public class LocationProvider(IRepository<Location> loc):IProvider<Location>
     {
-        private readonly IGenericRepository<Location> _loc = loc;
+        private readonly IRepository<Location> _loc = loc;
 
         public List<Location> GetList()
         {

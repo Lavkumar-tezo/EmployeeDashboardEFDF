@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using EmployeeDirectory.DAL.Models;
+﻿using EmployeeDirectory.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -27,8 +25,7 @@ public partial class LavDbEfdfContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
         var configBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("app-settings.json").Build();
         string connectionString = configBuilder["connection:sql"]!;
         optionsBuilder.UseSqlServer(connectionString);

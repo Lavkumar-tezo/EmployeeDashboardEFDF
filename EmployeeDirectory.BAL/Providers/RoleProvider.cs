@@ -5,11 +5,11 @@ using EmployeeDirectory.BAL.Interfaces.Providers;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class RoleProvider(IGenericRepository<Role> data, IGenericProvider<Department> dept, IGenericProvider<Location> loc):IRoleProvider
+    public class RoleProvider(IRepository<Role> data, IProvider<Department> dept, IProvider<Location> loc):IRoleProvider
     {
-        private readonly IGenericRepository<Role> _role = data;
-        private readonly IGenericProvider<Department> _dept = dept;
-        private readonly IGenericProvider<Location> _loc =loc;
+        private readonly IRepository<Role> _role = data;
+        private readonly IProvider<Department> _dept = dept;
+        private readonly IProvider<Location> _loc =loc;
 
         public void AddRole(Dictionary<string, string> inputs)
         {

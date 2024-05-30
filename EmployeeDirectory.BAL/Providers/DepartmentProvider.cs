@@ -3,9 +3,9 @@ using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.DAL.Models;
 using System.Runtime.Intrinsics.Arm;
 
-public class DepartmentProvider(IGenericRepository<Department> dept) : IGenericProvider<Department>
+public class DepartmentProvider(IRepository<Department> dept) : IProvider<Department>
 {
-    private readonly IGenericRepository<Department> _dept = dept;
+    private readonly IRepository<Department> _dept = dept;
 
     public List<Department> GetList()
     {
@@ -20,7 +20,6 @@ public class DepartmentProvider(IGenericRepository<Department> dept) : IGenericP
         return dept;
     }
 
-    //
     public Dictionary<string, string> GetIdName()
     {
         List<Department> projects = GetList();

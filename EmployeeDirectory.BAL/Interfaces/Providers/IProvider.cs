@@ -1,6 +1,6 @@
 ﻿namespace EmployeeDirectory.BAL.Interfaces.Providers
 {
-    public interface IGenericProvider<T>
+    public interface IProvider<T>
     {
         public List<T> GetList();
 

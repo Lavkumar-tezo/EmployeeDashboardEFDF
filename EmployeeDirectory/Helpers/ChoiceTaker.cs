@@ -1,8 +1,11 @@
-﻿using EmployeeDirectory.BAL.Validators;
+﻿using EmployeeDirectory.BAL.Interfaces.Validators;
+using EmployeeDirectory.Interfaces.Helpers;
 namespace EmployeeDirectory.Helpers
 {
-    internal static class ChoiceTaker
+    internal class ChoiceTaker(IValidator val):IChoiceTaker
     {
+        private readonly IValidator _validator=val;
+
         /// <summary>
         /// Take input from user and check its range 
         /// </summary>
@@ -10,7 +13,7 @@ namespace EmployeeDirectory.Helpers
         /// <param name="end"></param>
         /// <returns>integer value</returns>
 
-        public static int CheckChoice(int start, int end)
+        public int CheckChoice(int start, int end)
         {
             bool isInputValid;
             int input;
@@ -20,7 +23,7 @@ namespace EmployeeDirectory.Helpers
                 Printer.Print(false, "Enter the choice : ");
                 try
                 {
-                    input = Validator.ValidateOption(Console.ReadLine() ?? "");
+                    input =_validator.ValidateOption(Console.ReadLine() ?? "");
                     if (input < start || input > end)
                     {
                         isInputValid = false;

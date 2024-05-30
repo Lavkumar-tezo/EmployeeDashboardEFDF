@@ -3,7 +3,7 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
-    public class DepartmentRepository(LavDbEfdfContext context):IGenericRepository<Department>
+    public class DepartmentRepository(LavDbEfdfContext context):IRepository<Department>
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 

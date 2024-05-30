@@ -1,6 +1,6 @@
 ﻿namespace EmployeeDirectory.BAL.Providers
 {
-    internal class ModelKeyStore
+    internal class SelectedEmployee
     {
         public static string Id { get; set; } = null!;
 

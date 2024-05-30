@@ -1,12 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using EmployeeDirectory.BAL.Interfaces;
 using EmployeeDirectory.BAL.Providers;
 using EmployeeDirectory.BAL.Validators;
 using EmployeeDirectory.DAL.Repositories;
 using EmployeeDirectory.DAL.Models;
-using EmployeeDirectory.BAL.Interfaces.Views;
+using EmployeeDirectory.Interfaces.Views;
 using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.BAL.Interfaces.Providers;
+using EmployeeDirectory.BAL.Interfaces.Validators;
+using EmployeeDirectory.BAL.Interfaces.Helpers;
+using EmployeeDirectory.Interfaces.Helpers;
+using EmployeeDirectory.Helpers;
 namespace EmployeeDirectory
 {
     public class ConfigureServices
@@ -16,19 +19,22 @@ namespace EmployeeDirectory
             var services = new ServiceCollection();
 
             services.AddScoped<IEmployeeView, Views.Employee>();
+            services.AddScoped<IChoiceTaker,ChoiceTaker>();
             services.AddScoped<IRoleView, Views.Role>();
             services.AddScoped<IValidator, Validator>();
+            services.AddScoped<IEmployeeValidator, EmployeeValidator>();
+            services.AddScoped<IRoleValidator, RoleValidator>();
             services.AddScoped<IEmployeeProvider, EmployeeProvider>();
             services.AddScoped<IGetProperty, GetProperty>();
             services.AddScoped<IRoleProvider, RoleProvider>();
-            services.AddScoped<IGenericProvider<Department>, DepartmentProvider>();
-            services.AddScoped<IGenericProvider<Project>, ProjectProvider>();
-            services.AddScoped<IGenericProvider<Location>, LocationProvider>();
-            services.AddScoped<IGenericRepository<Role>, RoleRepository>();
-            services.AddScoped<IGenericRepository<Employee>, EmployeeRepository>();
-            services.AddScoped<IGenericRepository<Department>, DepartmentRepository>();
-            services.AddScoped<IGenericRepository<Project>, ProjectRepository>();
-            services.AddScoped<IGenericRepository<Location>, LocationRepository>();
+            services.AddScoped<IProvider<Department>, DepartmentProvider>();
+            services.AddScoped<IProvider<Project>, ProjectProvider>();
+            services.AddScoped<IProvider<Location>, LocationProvider>();
+            services.AddScoped<IRepository<Role>, RoleRepository>();
+            services.AddScoped<IRepository<Employee>, EmployeeRepository>();
+            services.AddScoped<IRepository<Department>, DepartmentRepository>();
+            services.AddScoped<IRepository<Project>, ProjectRepository>();
+            services.AddScoped<IRepository<Location>, LocationRepository>();
             services.AddDbContext<LavDbEfdfContext>();
             services.AddScoped<MainMenu>();
             return services.BuildServiceProvider();

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using EmployeeDirectory.BAL.DTO;
-using EmployeeDirectory.BAL.Interfaces;
+using EmployeeDirectory.BAL.Interfaces.Helpers;
 namespace EmployeeDirectory.BAL.Providers
 {
     public class GetProperty:IGetProperty

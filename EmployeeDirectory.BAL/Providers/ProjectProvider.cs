@@ -4,9 +4,9 @@ using EmployeeDirectory.DAL.Models;
 
 namespace EmployeeDirectory.BAL.Providers
 {
-    public class ProjectProvider(IGenericRepository<Project> proj):IGenericProvider<Project>
+    public class ProjectProvider(IRepository<Project> proj):IProvider<Project>
     {
-        private readonly IGenericRepository<Project> _proj = proj;
+        private readonly IRepository<Project> _proj = proj;
 
         public List<Project> GetList()
         {

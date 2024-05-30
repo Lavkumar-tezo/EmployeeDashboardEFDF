@@ -4,7 +4,7 @@ using EmployeeDirectory.DAL.Interfaces;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
-    public class RoleRepository(LavDbEfdfContext context):IGenericRepository<Role>
+    public class RoleRepository(LavDbEfdfContext context):IRepository<Role>
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 

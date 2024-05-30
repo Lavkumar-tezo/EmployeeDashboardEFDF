@@ -1,58 +1,62 @@
 ﻿using EmployeeDirectory.BAL.Extension;
 using EmployeeDirectory.BAL.Helper;
 using EmployeeDirectory.Helpers;
-using EmployeeDirectory.BAL.Interfaces;
-using EmployeeDirectory.BAL.Interfaces.Views;
+using EmployeeDirectory.Interfaces.Views;
 using EmployeeDirectory.BAL.Interfaces.Providers;
 using EmployeeDirectory.DAL.Models;
+using EmployeeDirectory.BAL.Interfaces.Validators;
+using EmployeeDirectory.BAL.Interfaces.Helpers;
+using EmployeeDirectory.Interfaces.Helpers;
 namespace EmployeeDirectory.Views
 {
-    internal class Employee(IValidator validator,IRoleProvider role, IEmployeeProvider emp, IGetProperty prop, IGenericProvider<Department> dept, IGenericProvider<Project> proj,IGenericProvider<Location> loc):IEmployeeView
+    internal class Employee(IEmployeeValidator empVal, IRoleProvider role, IEmployeeProvider emp, IGetProperty prop, IProvider<Department> dept, IProvider<Project> proj,IProvider<Location> loc, IChoiceTaker taker) :IEmployeeView
     {
-        private readonly IValidator _validator = validator;
+        private readonly IEmployeeValidator _empValidator=empVal;
+        private readonly IChoiceTaker _taker = taker;
         private readonly IEmployeeProvider _employee = emp;
         private readonly IRoleProvider _role = role;
         private readonly IGetProperty _getProperty = prop;
-        private readonly IGenericProvider<Department> _dept = dept;
-        private readonly IGenericProvider<Project> _proj = proj;
-        private readonly IGenericProvider<Location> _loc = loc;
+        private readonly IProvider<Department> _dept = dept;
+        private readonly IProvider<Project> _proj = proj;
+        private readonly IProvider<Location> _loc = loc;
 
         public void ShowEmployeeMenu()
         {
            int input;
 
-        EmployeeMenu: Printer.Print(true, "---------Employee Management Menu---------", "1. Add Employee", "2. Display All", "3. Display One", "4. Edit Employee", "5. Delete Employee", "6. Go Back");
-           input = ChoiceTaker.CheckChoice(1, 6);
+        Printer.Print(true, "---------Employee Management Menu---------", "1. Add Employee", "2. Display All", "3. Display One", "4. Edit Employee", "5. Delete Employee", "6. Go Back");
+           input = _taker.CheckChoice(1, 6);
            switch (input)
            {
                case 1:
                    AddEmployee();
-                   goto NextProcess;
+                   break;
                case 2:
                    DisplayEmployeeList();
-                   goto NextProcess;
+                   break;
                case 3:
                    DisplaySelectedEmp();
-                   goto NextProcess;
+                   break;
                case 4:
                    EditEmployee();
-                   goto NextProcess;
+                   break;
                case 5:
                    DeleteEmployee();
-                   goto NextProcess;
+                   break;
                case 6:
                    Printer.Print(true, "Welcome Back to Main Menu");
                    return;
            }
-        NextProcess: Printer.Print(true, "Where do u want to go", "1. Go to Main Menu", "2. Go to Previous Menu");
-           input = ChoiceTaker.CheckChoice(1, 2);
+        Printer.Print(true, "Where do u want to go", "1. Go to Main Menu", "2. Go to Previous Menu");
+           input = _taker.CheckChoice(1, 2);
            switch (input)
            {
                case 1:
                    Printer.Print(true, "Welcome Back to Main Menu");
                    break;
                case 2:
-                   goto EmployeeMenu;
+                    ShowEmployeeMenu();
+                    break;  
            }
         }
 
@@ -131,7 +135,7 @@ namespace EmployeeDirectory.Views
                        MessagesInputStore.inputFieldValues[inputName] = Console.ReadLine() ?? "";
                    }
                }
-                isAllInputCorrect = _validator.ValidateEmployeeInputs(mode, ref isAllInputCorrect);
+                isAllInputCorrect = _empValidator.ValidateEmployeeInputs(mode, ref isAllInputCorrect);
                if (!isAllInputCorrect)
                {
                    foreach (var item in MessagesInputStore.validationMessages)
@@ -175,7 +179,6 @@ namespace EmployeeDirectory.Views
                string inputId = Console.ReadLine() ?? "";
                if (inputId.IsEmpty())
                {
-                    //
                    throw new DAL.Exceptions.EmpNotFound("Employee Id can't be null");
                }
                 (bool check,DAL.Models.Employee selectedEmp) = _employee.GetEmployeeById(inputId);
@@ -223,7 +226,7 @@ namespace EmployeeDirectory.Views
            Printer.Print(true, $"Emp Id: {emp.Id} -- Full Name: {emp.FirstName} {emp.LastName} -- Department: {emp.Department.Name} -- Role: {emp.Role.Name} -- Email: {emp.Email} -- Location: {emp.Location.Name} -- JoiningDate: {emp.JoiningDate} -- Manager: {emp.Manager?.FirstName} {emp.Manager?.LastName} -- Project: {emp.Project?.Name} -- DOB: {emp.Dob} -- Mobile: {emp.Mobile}");
         }
 
-        public void DisplaySelectedEmp()
+        private void DisplaySelectedEmp()
         {
            Printer.Print(false, "Enter the Id of employee: ");
            string inputId = Console.ReadLine() ?? "";

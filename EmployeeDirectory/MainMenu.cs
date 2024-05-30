@@ -1,14 +1,16 @@
 ﻿using EmployeeDirectory.Helpers;
 using EmployeeDirectory.BAL.Validators;
-using EmployeeDirectory.BAL.Interfaces.Views;
+using EmployeeDirectory.Interfaces.Views;
+using EmployeeDirectory.BAL.Interfaces.Validators;
 
 namespace EmployeeDirectory
 {
-    public class MainMenu(IRoleView role,IEmployeeView emp)
+    public class MainMenu(IRoleView role,IEmployeeView emp, IValidator val)
     {
         private readonly IEmployeeView _emp = emp;
         private readonly IRoleView _role = role;
-
+        private readonly IValidator _validator = val;
+        
         public void ShowMainMenu()
         {
             int input;
@@ -21,7 +23,7 @@ namespace EmployeeDirectory
                 Printer.Print(false, "Enter the choice (Numeric): ");
                 try
                 {
-                    input = Validator.ValidateOption(Console.ReadLine() ?? "");
+                    input = _validator.ValidateOption(Console.ReadLine() ?? "");
 
                     if (input < 1 || input > 3)
                     {

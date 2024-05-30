@@ -1,58 +1,59 @@
 ﻿using EmployeeDirectory.Helpers;
 using EmployeeDirectory.BAL.Helper;
-using EmployeeDirectory.BAL.Interfaces.Views;
-using EmployeeDirectory.BAL.Interfaces;
+using EmployeeDirectory.Interfaces.Views;
 using EmployeeDirectory.BAL.Interfaces.Providers;
 using EmployeeDirectory.DAL.Models;
+using EmployeeDirectory.BAL.Interfaces.Validators;
+using EmployeeDirectory.BAL.Interfaces.Helpers;
+using EmployeeDirectory.Interfaces.Helpers;
 namespace EmployeeDirectory.Views
 {
-    public class Role(IValidator validator, IRoleProvider role, IGetProperty prop, IGenericProvider<Location> loc,
-        IGenericProvider<Department> dept) :IRoleView
+    public class Role(IRoleValidator roleValidator, IRoleProvider role, IGetProperty prop, IProvider<Location> loc, IProvider<Department> dept, IChoiceTaker taker) :IRoleView
     {
-        private readonly IValidator _validator = validator;
+        private readonly IChoiceTaker _taker = taker;
+        private readonly IRoleValidator _roleValidator=roleValidator;
         private readonly IRoleProvider _roleProvider = role;
         private readonly IGetProperty _getProperty = prop;
-        private readonly IGenericProvider<Department> _dept =dept ;
-        private readonly IGenericProvider<Location> _loc =loc ;
+        private readonly IProvider<Department> _dept =dept ;
+        private readonly IProvider<Location> _loc =loc ;
 
         public void ShowRoleMenu()
         {
             int input;
 
-        startRoleMenu: Printer.Print(true, "---------Role Management Menu---------", "1. Add Role", "2. Display All", "3. Go Back");
-            input = ChoiceTaker.CheckChoice(1, 3);
+        Printer.Print(true, "---------Role Management Menu---------", "1. Add Role", "2. Display All", "3. Go Back");
+            input = _taker.CheckChoice(1, 3);
             switch (input)
             {
                 case 1:
                     AddRole();
-                    goto NextProcess;
+                    break;
                 case 2:
                     DisplayRoleList();
-                    goto NextProcess;
+                    break;
                 case 3:
                     Printer.Print(true, "Welcome Back to Main Menu");
-                    break;
+                    return;
             }
-        NextProcess: Printer.Print(true, "Where do u want to go", "1. Go to Main Menu", "2. Go to Previous Menu");
-            input = ChoiceTaker.CheckChoice(1, 2);
+        Printer.Print(true, "Where do u want to go", "1. Go to Main Menu", "2. Go to Previous Menu");
+            input = _taker.CheckChoice(1, 2);
             switch (input)
             {
                 case 1:
                     Printer.Print(true, "Welcome Back to Main Menu");
-                    break;
+                    return;
                 case 2:
-                    goto startRoleMenu;
-
+                    ShowRoleMenu();
+                    break;
             }
         }
 
-        public void AddRole()
+        private void AddRole()
         {
             try
             {
                 List<string> inputFields = _getProperty.GetProperties("Role");
                 bool isAllInputCorrect = true;
-
 
                 do
                 {
@@ -81,7 +82,7 @@ namespace EmployeeDirectory.Views
                             
                         }
                     }
-                    isAllInputCorrect = _validator.ValidateRoleInputs(ref isAllInputCorrect);
+                    isAllInputCorrect =_roleValidator.ValidateRoleInputs(ref isAllInputCorrect);
                     if (!isAllInputCorrect)
                     {
                         foreach (var item in MessagesInputStore.validationMessages)
@@ -102,7 +103,7 @@ namespace EmployeeDirectory.Views
 
         }
 
-        public void DisplayRoleList()
+        private void DisplayRoleList()
         {
             try
             {
@@ -126,7 +127,7 @@ namespace EmployeeDirectory.Views
 
         }
 
-        public void DisplayRole(DAL.Models.Role role)
+        private void DisplayRole(DAL.Models.Role role)
         {
             List<string> locs=role.Locations.Select(x => x.Name).ToList();
             string location = string.Join(",", locs);

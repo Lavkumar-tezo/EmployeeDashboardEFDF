@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
-    public class EmployeeRepository(LavDbEfdfContext context):IGenericRepository<Employee>
+    public class EmployeeRepository(LavDbEfdfContext context):IRepository<Employee>
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 
@@ -41,7 +41,7 @@ namespace EmployeeDirectory.DAL.Repositories
 
         public void Delete(string id)
         {
-           Employee emp = _dbEfContext.Employees.First(emp => emp.Id == id)!;
+           Employee emp = _dbEfContext.Employees.FirstOrDefault(emp => emp.Id == id)!;
            if (emp != null)
            {
                emp.IsDeleted=true;

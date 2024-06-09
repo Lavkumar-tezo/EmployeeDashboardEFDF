@@ -8,23 +8,23 @@ namespace EmployeeDirectory.BAL.Providers
     {
         private readonly IRepository<Project> _proj = proj;
 
-        public List<Project> GetList()
+        public async Task<List<Project>> GetList()
         {
-            return _proj.GetAll();
+            List<Project> list =await _proj.GetAll();
+            return list;
         }
 
-        //
-        public Project Get(string id)
+        public async Task<Project> Get(string id)
         {
             int prjectId=Int32.Parse(id);
-            List<Project> list = GetList();
+            List<Project> list =await GetList();
             Project project = list.First(x=> x.Id==prjectId);
             return project;
         }
 
-        public Dictionary<string, string> GetIdName()
+        public async Task<Dictionary<string, string>> GetIdName()
         {
-            List<Project> projects = GetList();
+            List<Project> projects =await GetList();
             Dictionary<string, string> projList = new Dictionary<string, string>();
             foreach (Project d in projects)
             {

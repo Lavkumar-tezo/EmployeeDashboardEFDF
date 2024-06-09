@@ -1,5 +1,6 @@
 ﻿using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
@@ -7,27 +8,34 @@ namespace EmployeeDirectory.DAL.Repositories
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 
-        public List<Location> GetAll()
+        public async Task<List<Location>> GetAll()
         {
-            return _dbEfContext.Locations.ToList();
+            List<Location> locations = await _dbEfContext.Locations.ToListAsync();
+            return locations;
         }
 
-        public Location Get(string id)
+        public async Task<Location> Get(string id)
         {
-            return _dbEfContext.Locations.Find(Int32.Parse(id))!;
+            List<Location> locations = await GetAll();
+            Location? location = locations.FirstOrDefault(loc => string.Equals(loc.Id, id));
+            if (location != null)
+            {
+                return location;
+            }
+            throw new Exception("Selected Location Not found");
         }
 
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Location location)
+        public async Task Update(Location location)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Location location)
+        public async Task Add(Location location)
         {
             throw new NotImplementedException();
         }

@@ -3,13 +3,13 @@ namespace EmployeeDirectory.BAL.Interfaces.Providers
 {
     public interface IRoleProvider
     {
-        public void AddRole(Dictionary<string, string> inputs);
+        public Task AddRole(Dictionary<string, string> inputs);
 
-        public List<Role> GetRoles();
+        public Task<List<Role>> GetRoles();
 
-        public Role GetRole(string id);
+        public Task<Role> GetRole(string id);
 
-        public Dictionary<string, string> GetIdName();
+        public Task<Dictionary<string, string>> GetIdName();
 
 
     }

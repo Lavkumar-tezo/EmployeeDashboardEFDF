@@ -3,18 +3,18 @@ namespace EmployeeDirectory.BAL.Interfaces.Providers
 {
     public interface IEmployeeProvider
     {
-        public void AddEmployee(DTO.Employee employee);
+        public Task AddEmployee(DTO.Employee employee);
 
-        public List<Employee> GetEmployees();
+        public Task<List<Employee>> GetEmployees();
 
-        public List<Employee> GetManagers();
+        public Task<List<Employee>> GetManagers();
 
-        public (bool, Employee) GetEmployeeById(string id);
+        public Task<Employee> GetEmployeeById(string id);
 
-        public void UpdateEmployee(DTO.Employee employee, Employee emp);
+        public Task UpdateEmployee(DTO.Employee employee, Employee emp);
 
-        public void DeleteEmployee(string id);
+        public Task DeleteEmployee(string id);
 
-        public DTO.Employee AddValueToDTO(Dictionary<string, string> values, string mode);
+        public Task<DTO.Employee> AddValueToDTO(Dictionary<string, string> values, string mode);
     }
 }

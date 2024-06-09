@@ -2,10 +2,10 @@
 {
     public interface IProvider<T>
     {
-        public List<T> GetList();
+        public Task<List<T>> GetList();
 
-        public T Get(string id);
+        public Task<T> Get(string id);
 
-        public Dictionary<string, string> GetIdName();
+        public Task<Dictionary<string, string>> GetIdName();
     }
 }

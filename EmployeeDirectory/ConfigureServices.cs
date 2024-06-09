@@ -10,6 +10,8 @@ using EmployeeDirectory.BAL.Interfaces.Validators;
 using EmployeeDirectory.BAL.Interfaces.Helpers;
 using EmployeeDirectory.Interfaces.Helpers;
 using EmployeeDirectory.Helpers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 namespace EmployeeDirectory
 {
     public class ConfigureServices
@@ -35,7 +37,12 @@ namespace EmployeeDirectory
             services.AddScoped<IRepository<Department>, DepartmentRepository>();
             services.AddScoped<IRepository<Project>, ProjectRepository>();
             services.AddScoped<IRepository<Location>, LocationRepository>();
-            services.AddDbContext<LavDbEfdfContext>();
+            var configBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("app-settings.json").Build();
+            string connectionString = configBuilder["connection:sql"]!;
+            services.AddDbContext<LavDbEfdfContext>(Options =>
+            {
+                Options.UseSqlServer(connectionString);
+            });
             services.AddScoped<MainMenu>();
             return services.BuildServiceProvider();
         }

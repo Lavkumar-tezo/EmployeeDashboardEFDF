@@ -11,7 +11,7 @@ namespace EmployeeDirectory
         private readonly IRoleView _role = role;
         private readonly IValidator _validator = val;
         
-        public void ShowMainMenu()
+        public async Task ShowMainMenu()
         {
             int input;
             bool isValidInput;
@@ -34,11 +34,11 @@ namespace EmployeeDirectory
                     {
                         case 1:
                             isValidInput = false;
-                            _emp.ShowEmployeeMenu();
+                            await _emp.ShowEmployeeMenu();
                             break;
                         case 2:
                             isValidInput = false;
-                            _role.ShowRoleMenu();
+                            await _role.ShowRoleMenu();
                             break;
                         default:
                             Printer.Print(true, "Program Ended");

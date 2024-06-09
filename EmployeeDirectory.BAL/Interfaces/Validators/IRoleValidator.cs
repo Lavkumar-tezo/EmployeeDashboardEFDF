@@ -2,6 +2,6 @@
 {
     public interface IRoleValidator
     {
-        bool ValidateRoleInputs(ref bool isAllInputCorrect);
+        public Task<bool> ValidateRoleInputs(bool isAllInputCorrect);
     }
 }

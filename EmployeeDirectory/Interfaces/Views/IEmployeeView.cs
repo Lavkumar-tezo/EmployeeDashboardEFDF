@@ -2,6 +2,6 @@
 {
     public interface IEmployeeView
     {
-        public void ShowEmployeeMenu();
+        public Task ShowEmployeeMenu();
     }
 }

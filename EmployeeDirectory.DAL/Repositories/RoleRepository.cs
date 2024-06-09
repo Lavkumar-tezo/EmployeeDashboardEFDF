@@ -1,6 +1,7 @@
 ﻿using EmployeeDirectory.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using EmployeeDirectory.DAL.Interfaces;
+using EmployeeDirectory.DAL.Exceptions;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
@@ -8,28 +9,34 @@ namespace EmployeeDirectory.DAL.Repositories
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 
-        public List<Role> GetAll()
+        public async Task<List<Role>> GetAll()
         {
-            List<Role> roles = _dbEfContext.Roles.Include(r=> r.Departments).Include(r=> r.Locations).ToList();
+            List<Role> roles = await _dbEfContext.Roles.Include(r=> r.Departments).Include(r=> r.Locations).ToListAsync();
             return roles;
         }
 
-        public void Add(Role newRole)
+        public async Task Add(Role newRole)
         {
-            _dbEfContext.Roles.Add(newRole);
+            await _dbEfContext.Roles.AddAsync(newRole);
             _dbEfContext.SaveChanges();
         }
-        public void Delete(string roleId)
+        public async Task Delete(string roleId)
         {
             throw new NotImplementedException();
         }
 
-        public Role Get(string roleId)
+        public async Task<Role> Get(string roleId)
         {
-            return _dbEfContext.Roles.Find(roleId)!;
+            List<Role>? roles = await GetAll();
+            Role? role = roles.FirstOrDefault(role => role.Id.ToLower() == roleId.ToLower());
+            if (role != null)
+            {
+                return role;
+            }
+            throw new Exception("Role not found");
         }
 
-        public void Update(Role role)
+        public async Task Update(Role role)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,5 @@
 ﻿using EmployeeDirectory.DAL.Models;
 using EmployeeDirectory.DAL.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using EmployeeDirectory.BAL.Interfaces.Providers;
 
 namespace EmployeeDirectory.BAL.Providers
@@ -11,32 +10,32 @@ namespace EmployeeDirectory.BAL.Providers
         private readonly IProvider<Department> _dept = dept;
         private readonly IProvider<Location> _loc =loc;
 
-        public void AddRole(Dictionary<string, string> inputs)
+        public async Task AddRole(Dictionary<string, string> inputs)
         {
             Role role = new()
             {
                 Name = inputs["Name"],
                 Description = inputs["Description"],
-                Id = GenerateRoleId()
+                Id =await GenerateRoleId()
             };
-            List<Department> departments = _dept.GetList();
+            List<Department> departments =await _dept.GetList();
             List<string> deptIds = new List<string>(inputs["Department"].Split(','));
             foreach (string id in deptIds)
             {
                 role.Departments.Add(departments.First(x => x.Id.ToString().Equals(id)));
             }
-            List<Location> locations = _loc.GetList();
+            List<Location> locations =await _loc.GetList();
             List<string> locIds = new List<string>(inputs["Location"].Split(','));
             foreach(string id in locIds)
             {
                 role.Locations.Add(locations.First(x=> x.Id.ToString().Equals(id)));
             }
-            _role.Add(role);
+            await _role.Add(role);
         }
 
-        public string GenerateRoleId()
+        private async Task<string> GenerateRoleId()
         {
-            List<Role> roles = _role.GetAll();
+            List<Role> roles =await _role.GetAll();
             if (roles.Count == 0)
             {
                 return "IN001";
@@ -48,14 +47,15 @@ namespace EmployeeDirectory.BAL.Providers
             return newId;
         }
 
-        public List<Role> GetRoles()
+        public async Task<List<Role>> GetRoles()
         {
-            return _role.GetAll();
+            List<Role> roles=await _role.GetAll();
+            return roles;
         }
 
-        public Dictionary<string, string> GetIdName()
+        public async Task<Dictionary<string, string>> GetIdName()
         {
-            List<Role> roles = GetRoles();
+            List<Role> roles =await GetRoles();
             Dictionary<string, string> roleIdName = new Dictionary<string, string>();
             foreach (Role r in roles)
             {
@@ -64,9 +64,10 @@ namespace EmployeeDirectory.BAL.Providers
             return roleIdName;
         }
 
-        public Role GetRole(string id)
+        public async Task<Role> GetRole(string id)
         {
-            return _role.Get(id);
+            Role role=await _role.Get(id);
+            return role;
         }
 
     }

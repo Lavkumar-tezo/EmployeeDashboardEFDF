@@ -2,6 +2,6 @@
 {
     public interface IRoleView
     {
-        public void ShowRoleMenu();
+        public Task ShowRoleMenu();
     }
 }

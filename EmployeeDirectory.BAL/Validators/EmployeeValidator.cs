@@ -135,7 +135,7 @@ namespace EmployeeDirectory.BAL.Validators
             return (false, "Failed");
         }
 
-        private bool IsValidCombination(string mode, string dept, string loc, string role) // checking role,dept and location combination exists or not
+        private async Task<bool> IsValidCombination(string mode, string dept, string loc, string role) // checking role,dept and location combination exists or not
         {
             bool check = true;
             if (string.Equals(mode, "Edit"))
@@ -145,22 +145,22 @@ namespace EmployeeDirectory.BAL.Validators
                 role = (role.IsEmpty()) ? SelectedEmployee.roleName : role;
             }
             bool isValid = true;
-            Dictionary<string, string> deptList = _dept.GetIdName();
+            Dictionary<string, string> deptList =await _dept.GetIdName();
             (isValid, string deptId) = ValidateInput("Department", dept, deptList, mode);
             check = isValid && check;
-            Dictionary<string, string> locList = _loc.GetIdName();
+            Dictionary<string, string> locList =await _loc.GetIdName();
             (isValid, string locId) = ValidateInput("Location", loc, locList, mode);
             check = isValid && check;
-            Dictionary<string, string> roleList = _role.GetIdName();
+            Dictionary<string, string> roleList =await _role.GetIdName();
             (isValid, string roleId) = ValidateInput("Role", role, roleList, mode);
             check = isValid && check;
             if (!check)
             {
                 return check;
             }
-            Role selectedRole = _role.GetRole(roleId);
-            Department selectedDepartment = _dept.Get(deptId);
-            Location selectedLocation = _loc.Get(locId);
+            Role selectedRole =await _role.GetRole(roleId);
+            Department selectedDepartment =await _dept.Get(deptId);
+            Location selectedLocation =await _loc.Get(locId);
             bool isDeptContainRole = selectedDepartment.Roles.Any(role => role.Id == selectedRole.Id);
             bool isLocContainRole = selectedLocation.Roles.Any(role => role.Id == selectedRole.Id);
             if (isDeptContainRole && isLocContainRole)
@@ -219,7 +219,7 @@ namespace EmployeeDirectory.BAL.Validators
 
         }
 
-        public bool ValidateManager(string key, string value)
+        public async Task<bool> ValidateManager(string key, string value)
         {
             value = value.ToUpper();
             if (!Regex.IsMatch(value, @"^TZ\d{4}$"))
@@ -227,7 +227,8 @@ namespace EmployeeDirectory.BAL.Validators
                 MessagesInputStore.validationMessages[key] = "Manager id should be in TZXXXX Format";
                 return false;
             }
-            bool managerExists = _emp.GetManagers().Any(emp => emp.Id.Equals(value));
+            List<Employee> managers = await _emp.GetManagers();
+            bool managerExists =managers.Any(emp => emp.Id.Equals(value));
             if (managerExists)
             {
                 MessagesInputStore.validationMessages.Remove(key);
@@ -238,7 +239,7 @@ namespace EmployeeDirectory.BAL.Validators
             return false;
         }
 
-        public bool ValidateEmployeeInputs(string mode, ref bool isAllInputCorrect)
+        public async Task<bool> ValidateEmployeeInputs(string mode, bool isAllInputCorrect)
         {
             bool isAllValid = true;
             bool isCombinationTrue = true;
@@ -266,11 +267,11 @@ namespace EmployeeDirectory.BAL.Validators
                     else if ((input.Key.Equals("Role") || input.Key.Equals("Location") || input.Key.Equals("Department")) && isCombinationTrue)
                     {
                         isCombinationTrue = !isCombinationTrue;
-                        isAllValid = IsValidCombination(mode, MessagesInputStore.inputFieldValues["Department"], MessagesInputStore.inputFieldValues["Location"], MessagesInputStore.inputFieldValues["Role"]) && isAllValid;
+                        isAllValid =await IsValidCombination(mode, MessagesInputStore.inputFieldValues["Department"], MessagesInputStore.inputFieldValues["Location"], MessagesInputStore.inputFieldValues["Role"]) && isAllValid;
                     }
                     else if (input.Key.Equals("Project"))
                     {
-                        (bool check, string message) = ValidateInput(input.Key, input.Value ?? "", _proj.GetIdName(), mode);
+                        (bool check, string message) = ValidateInput(input.Key, input.Value ?? "", await _proj.GetIdName(), mode);
                         isAllValid = isAllValid && check;
                         if (check && !string.Equals(message, "passed"))
                         {
@@ -289,7 +290,7 @@ namespace EmployeeDirectory.BAL.Validators
                         }
                         else
                         {
-                            isAllValid = ValidateManager(input.Key, input.Value!) && isAllValid;
+                            isAllValid =await ValidateManager(input.Key, input.Value!) && isAllValid;
                         }
                     }
                 }

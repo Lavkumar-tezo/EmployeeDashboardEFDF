@@ -9,16 +9,16 @@ namespace EmployeeDirectory.DAL.Repositories
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 
-        public List<Employee> GetAll()
+        public async  Task<List<Employee>> GetAll()
         {
 
-           List<Employee> employees = _dbEfContext.Employees.Where(x => x.IsDeleted !=true).Include("Department").Include("Project").Include("Role").Include("Location").ToList();
+           List<Employee> employees =await _dbEfContext.Employees.Where(x => x.IsDeleted !=true).Include("Department").Include("Project").Include("Role").Include("Location").ToListAsync();
            return employees;
         }
 
-        public Employee Get(string empId)
+        public async Task<Employee> Get(string empId)
         {
-           List<Employee>? employees = GetAll();
+           List<Employee>? employees = await GetAll();
            Employee? employee = employees.FirstOrDefault(e => e.Id.ToLower() == empId.ToLower());
            if (employee != null)
            {
@@ -27,21 +27,21 @@ namespace EmployeeDirectory.DAL.Repositories
            throw new EmpNotFound("Employee with given id not found");
         }
 
-        public void Add(Employee newEmp)
+        public async Task Add(Employee newEmp)
         {
-           _dbEfContext.Employees.Add(newEmp);
+           await _dbEfContext.Employees.AddAsync(newEmp);
            _dbEfContext.SaveChanges();
         }
 
-        public void Update(Employee updatedEmp)
+        public async Task Update(Employee updatedEmp)
         {
-           _dbEfContext.Entry(updatedEmp).State = EntityState.Modified;
-           _dbEfContext.SaveChanges();
+           _dbEfContext.Entry(updatedEmp).State =EntityState.Modified;
+           await _dbEfContext.SaveChangesAsync();
         }
 
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
-           Employee emp = _dbEfContext.Employees.FirstOrDefault(emp => emp.Id == id)!;
+           Employee? emp =await _dbEfContext.Employees.FirstOrDefaultAsync(emp => emp.Id == id)!;
            if (emp != null)
            {
                emp.IsDeleted=true;

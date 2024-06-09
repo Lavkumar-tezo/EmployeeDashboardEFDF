@@ -17,7 +17,7 @@ namespace EmployeeDirectory.Views
         private readonly IProvider<Department> _dept =dept ;
         private readonly IProvider<Location> _loc =loc ;
 
-        public void ShowRoleMenu()
+        public async Task ShowRoleMenu()
         {
             int input;
 
@@ -26,10 +26,10 @@ namespace EmployeeDirectory.Views
             switch (input)
             {
                 case 1:
-                    AddRole();
+                    await AddRole();
                     break;
                 case 2:
-                    DisplayRoleList();
+                    await DisplayRoleList();
                     break;
                 case 3:
                     Printer.Print(true, "Welcome Back to Main Menu");
@@ -43,12 +43,12 @@ namespace EmployeeDirectory.Views
                     Printer.Print(true, "Welcome Back to Main Menu");
                     return;
                 case 2:
-                    ShowRoleMenu();
+                    await ShowRoleMenu();
                     break;
             }
         }
 
-        private void AddRole()
+        private async Task AddRole()
         {
             try
             {
@@ -63,7 +63,7 @@ namespace EmployeeDirectory.Views
                         {
                             if (inputName.Equals("Department"))
                             {
-                                Dictionary<string, string> list = _dept.GetIdName();
+                                Dictionary<string, string> list =await _dept.GetIdName();
                                 string message = "Available Department : ";
                                 message += string.Join(", ", list.Values);
                                 message += "  -- Write full department name";
@@ -71,7 +71,7 @@ namespace EmployeeDirectory.Views
                             }
                             else if (inputName.Equals("Location"))
                             {
-                                Dictionary<string, string> list = _loc.GetIdName();
+                                Dictionary<string, string> list =await _loc.GetIdName();
                                 string message = "Available Location : ";
                                 message += string.Join(", ", list.Values);
                                 message += "  -- Write Location names separated By Comma";
@@ -82,7 +82,7 @@ namespace EmployeeDirectory.Views
                             
                         }
                     }
-                    isAllInputCorrect =_roleValidator.ValidateRoleInputs(ref isAllInputCorrect);
+                    isAllInputCorrect =await _roleValidator.ValidateRoleInputs(isAllInputCorrect);
                     if (!isAllInputCorrect)
                     {
                         foreach (var item in MessagesInputStore.validationMessages)
@@ -92,7 +92,7 @@ namespace EmployeeDirectory.Views
                     }
                 } while (!isAllInputCorrect);
                 MessagesInputStore.validationMessages.Clear();
-                _roleProvider.AddRole(MessagesInputStore.inputFieldValues);
+                await _roleProvider.AddRole(MessagesInputStore.inputFieldValues);
                 MessagesInputStore.inputFieldValues.Clear();
                 Printer.Print(true, "Role Added");
             }
@@ -103,11 +103,11 @@ namespace EmployeeDirectory.Views
 
         }
 
-        private void DisplayRoleList()
+        private async Task DisplayRoleList()
         {
             try
             {
-                List<DAL.Models.Role> RoleList = _roleProvider.GetRoles();
+                List<DAL.Models.Role> RoleList =await _roleProvider.GetRoles();
                 if (RoleList.Count == 0)
                 {
                     Console.WriteLine("No role found");

@@ -20,7 +20,7 @@ namespace EmployeeDirectory.Views
         private readonly IProvider<Project> _proj = proj;
         private readonly IProvider<Location> _loc = loc;
 
-        public void ShowEmployeeMenu()
+        public async Task ShowEmployeeMenu()
         {
            int input;
 
@@ -29,19 +29,19 @@ namespace EmployeeDirectory.Views
            switch (input)
            {
                case 1:
-                   AddEmployee();
+                   await AddEmployee();
                    break;
                case 2:
-                   DisplayEmployeeList();
+                   await DisplayEmployeeList();
                    break;
                case 3:
-                   DisplaySelectedEmp();
+                   await DisplaySelectedEmp();
                    break;
                case 4:
-                   EditEmployee();
+                   await EditEmployee();
                    break;
                case 5:
-                   DeleteEmployee();
+                   await DeleteEmployee();
                    break;
                case 6:
                    Printer.Print(true, "Welcome Back to Main Menu");
@@ -55,7 +55,7 @@ namespace EmployeeDirectory.Views
                    Printer.Print(true, "Welcome Back to Main Menu");
                    break;
                case 2:
-                    ShowEmployeeMenu();
+                    await ShowEmployeeMenu();
                     break;  
            }
         }
@@ -65,7 +65,7 @@ namespace EmployeeDirectory.Views
         /// </summary>
         /// <param name="mode"></param>
         /// <returns>return employee object</returns>
-        public BAL.DTO.Employee TakeInput(string mode)
+        public async Task<BAL.DTO.Employee> TakeInput(string mode)
         {
            List<string> inputFields = _getProperty.GetProperties("Employee");
            bool isAllInputCorrect = true;
@@ -78,7 +78,7 @@ namespace EmployeeDirectory.Views
                    {
                        if (inputName.Equals("Department") && isAllInputCorrect)
                        {
-                           List<Department> list=_dept.GetList();
+                           List<Department> list=await _dept.GetList();
                            string message = $"Available {inputName} : ";
                            foreach (var dept in list)
                            {
@@ -89,7 +89,7 @@ namespace EmployeeDirectory.Views
                        }
                        else if (inputName.Equals("Location") && isAllInputCorrect)
                         {
-                            List<Location> list = _loc.GetList();
+                            List<Location> list =await _loc.GetList();
                             string message = $"Available {inputName} : ";
                             foreach (var loc in list)
                             {
@@ -100,7 +100,7 @@ namespace EmployeeDirectory.Views
                         }
                         else if (inputName.Equals("Project") && isAllInputCorrect)
                        {
-                           List<Project> list = _proj.GetList();
+                           List<Project> list =await _proj.GetList();
                            string message = $"Available {inputName} : ";
                            foreach (var project in list)
                            {
@@ -111,7 +111,7 @@ namespace EmployeeDirectory.Views
                        }
                        else if (inputName.Equals("Role") && isAllInputCorrect)
                        {
-                           List<DAL.Models.Role> list = _role.GetRoles();
+                           List<DAL.Models.Role> list =await _role.GetRoles();
                            string message = $"Available {inputName} : ";
                            foreach (var role in list)
                            {
@@ -122,7 +122,7 @@ namespace EmployeeDirectory.Views
                        }
                         else if (inputName.Equals("Manager") && isAllInputCorrect)
                         {
-                            List<DAL.Models.Employee> list = _employee.GetManagers();
+                            List<DAL.Models.Employee> list =await _employee.GetManagers();
                             string message = $"Managers - select id among these -- \n";
                             foreach (var employee in list)
                             {
@@ -135,7 +135,7 @@ namespace EmployeeDirectory.Views
                        MessagesInputStore.inputFieldValues[inputName] = Console.ReadLine() ?? "";
                    }
                }
-                isAllInputCorrect = _empValidator.ValidateEmployeeInputs(mode, ref isAllInputCorrect);
+                isAllInputCorrect =await _empValidator.ValidateEmployeeInputs(mode, isAllInputCorrect);
                if (!isAllInputCorrect)
                {
                    foreach (var item in MessagesInputStore.validationMessages)
@@ -145,23 +145,23 @@ namespace EmployeeDirectory.Views
                }
            } while (!isAllInputCorrect);
            MessagesInputStore.validationMessages.Clear();
-           BAL.DTO.Employee emp = _employee.AddValueToDTO(MessagesInputStore.inputFieldValues, mode);
+           BAL.DTO.Employee emp =await _employee.AddValueToDTO(MessagesInputStore.inputFieldValues, mode);
            MessagesInputStore.inputFieldValues.Clear();
            return emp;
         }
 
-        public void AddEmployee()
+        public async Task AddEmployee()
         {
            try
            {
-               List<DAL.Models.Role> roleList = _role.GetRoles();
+               List<DAL.Models.Role> roleList =await _role.GetRoles();
                if (roleList.Count == 0)
                {
                    Printer.Print(true, "Add a new role First");
                    return;
                }
-               BAL.DTO.Employee emp = TakeInput("Add");
-               _employee.AddEmployee(emp);
+               BAL.DTO.Employee emp =await TakeInput("Add");
+               await _employee.AddEmployee(emp);
                Printer.Print(true, "Employee added");
            }
            catch (Exception ex)
@@ -171,7 +171,7 @@ namespace EmployeeDirectory.Views
 
         }
 
-        public void EditEmployee()
+        public async Task EditEmployee()
         {
            try
            {
@@ -181,9 +181,9 @@ namespace EmployeeDirectory.Views
                {
                    throw new DAL.Exceptions.EmpNotFound("Employee Id can't be null");
                }
-                (bool check,DAL.Models.Employee selectedEmp) = _employee.GetEmployeeById(inputId);
-                BAL.DTO.Employee emp = TakeInput("Edit");
-               _employee.UpdateEmployee(emp,selectedEmp);
+                DAL.Models.Employee selectedEmp =await _employee.GetEmployeeById(inputId);
+                BAL.DTO.Employee emp =await TakeInput("Edit");
+               await _employee.UpdateEmployee(emp,selectedEmp);
                Printer.Print(true, "Employee Updated");
            }
             catch (DAL.Exceptions.EmpNotFound ex)
@@ -197,11 +197,11 @@ namespace EmployeeDirectory.Views
            
 
         }
-        public void DisplayEmployeeList()
+        public async Task DisplayEmployeeList()
         {
            try
            {
-               List<DAL.Models.Employee> employeeList = _employee.GetEmployees();
+               List<DAL.Models.Employee> employeeList =await _employee.GetEmployees();
                if (employeeList.Count > 0)
                {
                    for (int i = 0; i < employeeList.Count; i++)
@@ -226,7 +226,7 @@ namespace EmployeeDirectory.Views
            Printer.Print(true, $"Emp Id: {emp.Id} -- Full Name: {emp.FirstName} {emp.LastName} -- Department: {emp.Department.Name} -- Role: {emp.Role.Name} -- Email: {emp.Email} -- Location: {emp.Location.Name} -- JoiningDate: {emp.JoiningDate} -- Manager: {emp.Manager?.FirstName} {emp.Manager?.LastName} -- Project: {emp.Project?.Name} -- DOB: {emp.Dob} -- Mobile: {emp.Mobile}");
         }
 
-        private void DisplaySelectedEmp()
+        private async Task DisplaySelectedEmp()
         {
            Printer.Print(false, "Enter the Id of employee: ");
            string inputId = Console.ReadLine() ?? "";
@@ -237,7 +237,7 @@ namespace EmployeeDirectory.Views
            }
            try
            {
-               (bool check, DAL.Models.Employee emp) = _employee.GetEmployeeById(inputId);
+               DAL.Models.Employee emp =await _employee.GetEmployeeById(inputId);
                DisplayEmployee(emp);
            }
            catch (DAL.Exceptions.EmpNotFound ex)
@@ -250,7 +250,7 @@ namespace EmployeeDirectory.Views
            }
         }
 
-        public void DeleteEmployee()
+        public async Task DeleteEmployee()
         {
            try
            {
@@ -263,7 +263,7 @@ namespace EmployeeDirectory.Views
                }
                else
                {
-                    _employee.DeleteEmployee(inputId);
+                    await _employee.DeleteEmployee(inputId);
                     Printer.Print(true, "Employee deleted");
                 }
            }

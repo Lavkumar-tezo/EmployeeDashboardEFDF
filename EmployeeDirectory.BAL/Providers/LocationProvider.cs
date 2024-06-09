@@ -8,22 +8,23 @@ namespace EmployeeDirectory.BAL.Providers
     {
         private readonly IRepository<Location> _loc = loc;
 
-        public List<Location> GetList()
+        public async Task<List<Location>> GetList()
         {
-            return _loc.GetAll();
+            List<Location> list = await _loc.GetAll();
+            return list;
         }
 
-        public Location Get(string id)
+        public async Task<Location> Get(string id)
         {
             int locId = Int32.Parse(id);
-            List<Location> list = GetList();
+            List<Location> list =await GetList();
             Location loc = list.First(x => x.Id == locId);
             return loc;
         }
 
-        public Dictionary<string, string> GetIdName()
+        public async Task<Dictionary<string, string>> GetIdName()
         {
-            List<Location> departments = GetList();
+            List<Location> departments =await GetList();
             Dictionary<string, string> deptList = new Dictionary<string, string>();
             foreach (Location d in departments)
             {

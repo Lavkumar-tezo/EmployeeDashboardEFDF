@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace EmployeeDirectory.DAL.Models;
+﻿namespace EmployeeDirectory.DAL.Models;
 
 public partial class Employee
 {

@@ -1,28 +1,28 @@
 ﻿using EmployeeDirectory.BAL.Interfaces.Providers;
 using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.DAL.Models;
-using System.Runtime.Intrinsics.Arm;
 
 public class DepartmentProvider(IRepository<Department> dept) : IProvider<Department>
 {
     private readonly IRepository<Department> _dept = dept;
 
-    public List<Department> GetList()
+    public async Task<List<Department>> GetList()
     {
-        return _dept.GetAll();
+        List<Department> departments= await _dept.GetAll();
+        return departments;
     }
 
-    public Department Get(string id)
+    public async Task<Department> Get(string id)
     {
         int deptId = Int32.Parse(id);
-        List<Department> list =GetList();
+        List<Department> list = await GetList();
         Department dept = list.First(x => x.Id == deptId);
         return dept;
     }
 
-    public Dictionary<string, string> GetIdName()
+    public async Task<Dictionary<string, string>> GetIdName()
     {
-        List<Department> projects = GetList();
+        List<Department> projects =await GetList();
         Dictionary<string, string> deptList = new Dictionary<string, string>();
         foreach (Department d in projects)
         {

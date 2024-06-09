@@ -14,7 +14,7 @@ namespace EmployeeDirectory.BAL.Validators
         private readonly IProvider<Location> _loc = loc;
         private readonly IValidator _val = val;
 
-        private bool ValidateRoleFields(string key, string value)
+        private async Task<bool> ValidateRoleFields(string key, string value)
         {
             bool check = _val.IsFieldEmpty(value, key);
             if (check)
@@ -25,11 +25,11 @@ namespace EmployeeDirectory.BAL.Validators
             Dictionary<string, string> locList = new Dictionary<string, string>();
             if (string.Equals(key, "Location"))
             {
-                locList = _loc.GetIdName();
+                locList =await _loc.GetIdName();
             }
             else
             {
-                locList = _dept.GetIdName();
+                locList =await _dept.GetIdName();
             }
             List<string> locIds = new();
             foreach (string word in words)
@@ -50,9 +50,9 @@ namespace EmployeeDirectory.BAL.Validators
             return true;
         }
 
-        private (bool, string) ValidateRoleName(string value)
+        private async Task<(bool, string)> ValidateRoleName(string value)
         {
-            ValidateRoleFields("Department", MessagesInputStore.inputFieldValues["Department"]);
+            await ValidateRoleFields("Department", MessagesInputStore.inputFieldValues["Department"]);
             if (MessagesInputStore.validationMessages.ContainsKey("Department"))
             {
                 return (false, "Role : select valid department first for adding role");
@@ -66,7 +66,7 @@ namespace EmployeeDirectory.BAL.Validators
             {
                 return (false, "Role : Role name Should contains Alphabets only");
             }
-            List<Role> roles = _role.GetRoles();
+            List<Role> roles =await _role.GetRoles();
             roles = (from role in roles where role.Name.ToLower().Equals(value) select role).ToList();
             if (roles.Count > 0)
             {
@@ -75,7 +75,7 @@ namespace EmployeeDirectory.BAL.Validators
             return (true, "Role available");
         }
 
-        public bool ValidateRoleInputs(ref bool isAllInputCorrect)
+        public async Task<bool> ValidateRoleInputs(bool isAllInputCorrect)
         {
             bool isAllValid = true;
 
@@ -85,7 +85,7 @@ namespace EmployeeDirectory.BAL.Validators
                 {
                     if (input.Key.Equals("Name"))
                     {
-                        (isAllValid, string message) = ValidateRoleName(input.Value);
+                        (isAllValid, string message) =await ValidateRoleName(input.Value);
                         if (isAllValid)
                         {
                             MessagesInputStore.validationMessages.Remove(input.Key);
@@ -97,7 +97,7 @@ namespace EmployeeDirectory.BAL.Validators
                     }
                     else if (input.Key.Equals("Location"))
                     {
-                        isAllValid = ValidateRoleFields(input.Key, input.Value) && isAllValid;
+                        isAllValid =await ValidateRoleFields(input.Key, input.Value) && isAllValid;
                     }
                 }
             }

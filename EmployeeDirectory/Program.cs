@@ -3,11 +3,11 @@ namespace EmployeeDirectory
 {
     internal class Program
     {
-        public static void Main()
+        public static async Task Main()
         {
             IServiceProvider serviceProvider = ConfigureServices.BuildServices();
             MainMenu menu= serviceProvider.GetRequiredService<MainMenu>();
-            menu.ShowMainMenu();
+            await menu.ShowMainMenu();
         }
 
     }

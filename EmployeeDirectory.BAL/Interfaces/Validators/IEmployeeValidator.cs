@@ -2,6 +2,6 @@
 {
     public interface IEmployeeValidator
     {
-        bool ValidateEmployeeInputs(string mode, ref bool isAllInputCorrect);
+        public Task<bool> ValidateEmployeeInputs(string mode, bool isAllInputCorrect);
     }
 }

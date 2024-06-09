@@ -1,5 +1,6 @@
 ﻿using EmployeeDirectory.DAL.Interfaces;
 using EmployeeDirectory.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeDirectory.DAL.Repositories
 {
@@ -7,27 +8,34 @@ namespace EmployeeDirectory.DAL.Repositories
     {
         private readonly LavDbEfdfContext _dbEfContext = context;
 
-        public List<Project> GetAll()
+        public async Task<List<Project>> GetAll()
         {
-            return _dbEfContext.Projects.ToList();
+            List<Project> projects = await _dbEfContext.Projects.ToListAsync();
+            return projects;
         }
 
-        public Project Get(string id)
+        public async  Task<Project> Get(string id)
         {
-            return _dbEfContext.Projects.Find(Int32.Parse(id))!;
+            List<Project> projects = await GetAll();
+            Project? project = projects.FirstOrDefault(proj => string.Equals(proj.Id, id));
+            if (project != null)
+            {
+                return project;
+            }
+            throw new Exception("Selected Project Not found");
         }
 
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Project project)
+        public async Task Update(Project project)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Project project)
+        public async Task Add(Project project)
         {
             throw new NotImplementedException();
         }

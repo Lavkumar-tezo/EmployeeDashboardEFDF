@@ -1,0 +1,14 @@
+{
+  "exclude": [
+    "**/bin",
+    "**/bower_components",
+    "**/jspm_packages",
+    "**/node_modules",
+    "**/obj",
+    "**/platforms"
+  ],
+  "connection": {
+    "sql": "Server=SQL-DEV;Database=Lav_DB_EFDF;Trusted_Connection=True;TrustServerCertificate=True",
+    "sql2": "Server=LAV\\SQLEXPRESS;Database=Lav_DB_EFDF;Trusted_Connection=True;TrustServerCertificate=True"
+  }
+}
